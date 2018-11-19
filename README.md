@@ -1,2 +1,2 @@
 # risk-game
-Simplified version of the Risk game written in python.
+Simplified version of the Risk game written in java.
