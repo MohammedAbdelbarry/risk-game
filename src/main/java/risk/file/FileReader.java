@@ -1,4 +1,4 @@
-package fileManager;
+package risk.file;
 
 import java.io.File;
 import java.util.List;

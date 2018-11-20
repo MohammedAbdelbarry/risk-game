@@ -1,4 +1,4 @@
-package states;
+package risk.game.state;
 
 import java.util.List;
 
@@ -10,5 +10,6 @@ public class GameState {
 		worldMap = map;
 		
 	}
+
 
 }

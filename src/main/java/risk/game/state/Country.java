@@ -1,4 +1,4 @@
-package states;
+package risk.game.state;
 
 public class Country {
 	private int id;

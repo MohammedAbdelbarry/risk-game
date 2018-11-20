@@ -6,11 +6,7 @@
 
     <groupId>AI</groupId>
     <artifactId>Risk</artifactId>
-    <version>${semantic.version}</version>
-
-    <properties>
-        <semantic.version>1.0-SNAPSHOT</semantic.version>
-    </properties>
+    <version>1.0-SNAPSHOT</version>
 
     <build>
         <plugins>
@@ -41,7 +37,7 @@
                                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                                         <Bundle-Version>${semantic.version}</Bundle-Version>
                                     </manifestEntries>
-                                    <mainClass>PLEASE ADD THE MAIN CLASS HERE</mainClass> <!-- Edit Me -->
+                                    <mainClass>risk.game.Main</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
