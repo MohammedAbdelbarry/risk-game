@@ -2,7 +2,12 @@ package risk.game.state;
 
 public class PlayerState {
 	private int numberOfTerritories;
-	private int numberOfTroops;
+	private int troopsPerTurn;
+
+	public PlayerState(int numberOfTerritories, int troopsPerTurn) {
+		this.numberOfTerritories = numberOfTerritories;
+		this.troopsPerTurn = troopsPerTurn;
+	}
 
 	public int getNumberOfTerritories() {
 		return numberOfTerritories;
@@ -12,12 +17,12 @@ public class PlayerState {
 		this.numberOfTerritories = numberOfTerritories;
 	}
 
-	public int getNumberOfTroops() {
-		return numberOfTroops;
+	public int getTroopsPerTurn() {
+		return troopsPerTurn;
 	}
 
-	public void setNumberOfTroops(int numberOfTroops) {
-		this.numberOfTroops = numberOfTroops;
+	public void setTroopsPerTurn(int troopsPerTurn) {
+		this.troopsPerTurn = troopsPerTurn;
 	}
 
 }
