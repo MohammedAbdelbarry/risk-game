@@ -17,15 +17,19 @@ public class GameState {
 	private Graph worldMap;
 	private PlayerState player1State;
 	private PlayerState player2State;
+	Collection<Continent> continents;
 	private static final int NUM_TROOPS = 2;
 
-	public GameState(Graph worldMap) {
+	public GameState(Graph worldMap, Collection<Continent> continents) {
 		this.worldMap = worldMap;
+		this.continents = continents;
 		player = Player.PLAYER1;
 		phase = Phase.ALLOCATE;
-		// TODO: Check for continent bonus and update troops per turn
+
 		player1State = new PlayerState(worldMap, Player.PLAYER1, NUM_TROOPS);
 		player1State = new PlayerState(worldMap, Player.PLAYER2, NUM_TROOPS);
+		player1State.setTroopsPerTurn(calculateTroopsPerTurn(Player.PLAYER1));
+		player2State.setTroopsPerTurn(calculateTroopsPerTurn(Player.PLAYER2));
 	}
 
 	public GameState(GameState other) {
@@ -34,9 +38,10 @@ public class GameState {
 		phase = other.phase;
 		player1State = other.player1State;
 		player2State = other.player2State;
+		continents = other.continents;
 	}
 
-	private Collection<AllocationAction> getPossibleAllocations(Player activePlayer) {
+	public Collection<AllocationAction> getPossibleAllocations(Player activePlayer) {
 		Collection<AllocationAction> moves = new ArrayList<>();
 		for (Node node : worldMap.getEachNode()) {
 			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
@@ -47,7 +52,7 @@ public class GameState {
 		return moves;
 	}
 
-	private Collection<AttackAction> getPossibleAttacks(Player activePlayer) {
+	public Collection<AttackAction> getPossibleAttacks(Player activePlayer) {
 		Collection<AttackAction> moves= new ArrayList<>();
 		for (Node node : worldMap.getEachNode()) {
 			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
@@ -116,6 +121,7 @@ public class GameState {
 		updateGraphCountry(newState.worldMap, move.getAllocationResult());
 		newState.player1State = new PlayerState(newState.worldMap, Player.PLAYER1, player1State.getTroopsPerTurn());
 		newState.player2State = new PlayerState(newState.worldMap, Player.PLAYER2, player2State.getTroopsPerTurn());
+
 		return newState;
 	}
 
@@ -125,10 +131,24 @@ public class GameState {
 		newState.phase = Phase.ALLOCATE;
 		updateGraphCountry(newState.worldMap, move.getModifiedAttacker());
 		updateGraphCountry(newState.worldMap, move.getModifiedAttackee());
-		// TODO: Check for continent bonus and update troops per turn
+
 		newState.player1State = new PlayerState(newState.worldMap, Player.PLAYER1, player1State.getTroopsPerTurn());
 		newState.player2State = new PlayerState(newState.worldMap, Player.PLAYER2, player2State.getTroopsPerTurn());
+
+		newState.player1State.setTroopsPerTurn(newState.calculateTroopsPerTurn(Player.PLAYER1));
+		newState.player2State.setTroopsPerTurn(newState.calculateTroopsPerTurn(Player.PLAYER2));
 		return newState;
+	}
+
+	private int calculateTroopsPerTurn(Player player) {
+		PlayerState state = getPlayerState(player);
+		int troopsPerTurn = NUM_TROOPS;
+		for (Continent continent : continents) {
+			if (continent.isSubsetOf(state.getTerritories())) {
+				troopsPerTurn += continent.getBonus();
+			}
+		}
+		return troopsPerTurn;
 	}
 
 	public boolean isWinner(Player player) {

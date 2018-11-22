@@ -14,9 +14,10 @@ public class Country {
 	private int numberOfTroops;
 	private Player  controllingPlayer;
 
-	public Country(int id, Player player, Set<Country> neighbors) {
+	public Country(int id, Player player, int numberOfTroops) {
 		this.id = id;
 		this.controllingPlayer = player;
+		this.numberOfTroops = numberOfTroops;
 	}
 
 	public Country(Country other) {
@@ -50,22 +51,12 @@ public class Country {
 	}
 
 	public boolean isNeighbor(Graph worldMap, Country otherCountry) {
-		if (worldMap == null) {
+		if (worldMap == null || otherCountry == null) {
 			return false;
 		}
 
-		for (Node node : worldMap.getEachNode()) {
-			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
-			if (Objects.equals(this, country)) {
-				for (Edge edge : node.getEachLeavingEdge()) {
-					if (Objects.equals(otherCountry, edge.getTargetNode())) {
-						return true;
-					}
-				}
-				return false;
-			}
-		}
-		return false;
+		Node node = worldMap.getNode(String.valueOf(id));
+		return node.hasEdgeToward(String.valueOf(otherCountry.id));
 	}
 
 	public boolean canAttack(Graph worldMap, Country otherCountry) {

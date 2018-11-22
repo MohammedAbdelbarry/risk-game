@@ -17,6 +17,14 @@ public enum Player {
         }
     }
 
+    public static Player valueOf(int playerNum) {
+        if (playerNum == 1) {
+            return PLAYER1;
+        } else {
+            return PLAYER2;
+        }
+    }
+
     @Override
     public String toString() {
         return value;
