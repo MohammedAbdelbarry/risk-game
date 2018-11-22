@@ -28,12 +28,19 @@ public class GameState {
 		return false;
 	}
 
-	public PlayerState getPlayer1State() {
-		return player1State;
-	}
-
-	public PlayerState getPlayer2State() {
-		return player2State;
+//	public PlayerState getPlayer1State() {
+//		return player1State;
+//	}
+//
+//	public PlayerState getPlayer2State() {
+//		return player2State;
+//	}
+//	
+	public PlayerState getPlayerState(Player player) {
+		if(player == Player.PLAYER1)
+			return player1State;
+		else
+			return player2State;
 	}
 
 	public GameState forecastMove(Action move) {
