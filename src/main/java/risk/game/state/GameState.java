@@ -175,6 +175,10 @@ public class GameState {
 		return isWinner(player.getOpponent());
 	}
 
+	public boolean terminalTest() {
+		return isWinner(player) || isLoser(player);
+	}
+
 	public Player getActivePlayer() {
 		return player;
 	}

@@ -2,52 +2,49 @@ package risk.game.agents;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Optional;
 
 import risk.game.state.Country;
 import risk.game.state.GameState;
+import risk.game.state.Player;
 import risk.game.state.action.AllocationAction;
 
 public class PassiveAgent extends GameAgent {
 
-	private Collection<AllocationAction> legalActions;
-
 	@Override
-	public GameState play(GameState state) {
-		
-		if(terminalTest(state))
+	public GameState play(GameState state, Player player) {
+
+		if (state.getActivePlayer() != player) {
 			return state;
-		
-		Iterator<AllocationAction> iter = legalActions.iterator();
-		AllocationAction bestAction = iter.next();
-
-		while (iter.hasNext()) {
-			AllocationAction newAction = iter.next();
-			Country country1 = newAction.getAllocationResult();
-			Country country2 = bestAction.getAllocationResult();
-			if (country1.getNumberOfTroops() < country2.getNumberOfTroops()) {
-				bestAction = newAction;
-			} else if (country1.getNumberOfTroops() == country2.getNumberOfTroops()) {
-				if (country1.getId() < country2.getId())
-					bestAction = newAction;
-			}
 		}
+
+		Collection<AllocationAction> allocationActions = state.getPossibleAllocations();
+
+		if (terminalTest(state, allocationActions)) {
+			return state;
+		}
+
+		Optional<AllocationAction> possibleAction = allocationActions
+				.stream().min((action1, action2) -> {
+					Country country1 = action1.getCountry();
+					Country country2 = action2.getCountry();
+					if (country1.getNumberOfTroops() == country2.getNumberOfTroops()) {
+						return country1.getId() - country2.getId();
+					} else {
+						return country1.getNumberOfTroops() - country2.getNumberOfTroops();
+					}
+				});
+
+		if (!possibleAction.isPresent()) {
+			return state;
+		}
+
+		AllocationAction bestAction = possibleAction.get();
+
+
 		return state.forecastAllocation(bestAction);
-	}
-
-	@Override
-	public boolean terminalTest(GameState state) {
-		Collection<AllocationAction> actions = state.getPossibleAllocations();
-		Iterator<AllocationAction> iter = actions.iterator();
-		legalActions = new ArrayList<>();
-
-		while (iter.hasNext()) {
-			AllocationAction action = iter.next();
-			if (state.isLegalAllocation(action))
-				legalActions.add(action);
-		}
-
-		return legalActions.isEmpty() ? true : false;
 	}
 
 }
