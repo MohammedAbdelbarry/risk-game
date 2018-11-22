@@ -39,6 +39,19 @@ public class AttackAction {
         this.troops = troops;
     }
 
+    public Country getModifiedAttacker() {
+        Country modifiedCountry = new Country(attackingCountry);
+        modifiedCountry.setNumberOfTroops(modifiedCountry.getNumberOfTroops() - troops);
+        return modifiedCountry;
+    }
+
+    public Country getModifiedAttackee() {
+        Country modifiedCountry = new Country(attackedCountry);
+        modifiedCountry.setNumberOfTroops(troops - modifiedCountry.getNumberOfTroops());
+        modifiedCountry.setControllingPlayer(attackingCountry.getControllingPlayer());
+        return modifiedCountry;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

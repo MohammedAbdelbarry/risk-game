@@ -20,6 +20,12 @@ public class AllocationAction {
         return troops;
     }
 
+    public Country getAllocationResult() {
+        Country modifiedCountry = new Country(country);
+        modifiedCountry.setNumberOfTroops(modifiedCountry.getNumberOfTroops() + troops);
+        return modifiedCountry;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
