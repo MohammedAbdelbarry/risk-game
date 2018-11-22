@@ -26,7 +26,7 @@ public class GameState {
 		for (Node node : worldMap.getEachNode()) {
 			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
 			if (country.getControllingPlayer() == activePlayer) {
-				moves.add(new AllocationAction(country, 0)); // FIXME: Add the correct number of troops to action
+				moves.add(new AllocationAction(country, getPlayerState(activePlayer).getTroopsPerTurn()));
 			}
 		}
 		return moves;
