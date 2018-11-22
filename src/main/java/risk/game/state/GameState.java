@@ -105,7 +105,7 @@ public class GameState {
 	}
 
 	private void updateGraphCountry(Graph graph, Country newCountry) {
-		for (Node node : worldMap.getEachNode()) {
+		for (Node node : graph.getEachNode()) {
 			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
 			if (country.getId() == newCountry.getId()) {
 				node.setAttribute(Constants.COUNTRY_ATTRIBUTE, newCountry);
@@ -135,9 +135,19 @@ public class GameState {
 		newState.player1State = new PlayerState(newState.worldMap, Player.PLAYER1, player1State.getTroopsPerTurn());
 		newState.player2State = new PlayerState(newState.worldMap, Player.PLAYER2, player2State.getTroopsPerTurn());
 
-		newState.player1State.setTroopsPerTurn(newState.calculateTroopsPerTurn(Player.PLAYER1));
-		newState.player2State.setTroopsPerTurn(newState.calculateTroopsPerTurn(Player.PLAYER2));
+		newState.player1State.setTroopsPerTurn(newState.calculateTroopsPerTurn(Player.PLAYER1)
+				+ getPlayerAttackBonus(Player.PLAYER1, player));
+		newState.player2State.setTroopsPerTurn(newState.calculateTroopsPerTurn(Player.PLAYER2)
+				+ getPlayerAttackBonus(Player.PLAYER2, player));
 		return newState;
+	}
+
+	private int getPlayerAttackBonus(Player player, Player attackingPlayer) {
+		if (player == attackingPlayer) {
+			return 2;
+		}
+
+		return 0;
 	}
 
 	private int calculateTroopsPerTurn(Player player) {
