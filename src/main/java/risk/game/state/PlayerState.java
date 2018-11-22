@@ -1,20 +1,23 @@
 package risk.game.state;
 
-public class PlayerState {
-	private int numberOfTerritories;
-	private int troopsPerTurn;
+import java.util.Collection;
 
-	public PlayerState(int numberOfTerritories, int troopsPerTurn) {
-		this.numberOfTerritories = numberOfTerritories;
+public class PlayerState {
+	//private int numberOfTerritories;
+	private int troopsPerTurn;
+	private Collection<Country> territories; 
+
+	public PlayerState(Collection<Country> territories, int troopsPerTurn) {
+		this.territories = territories;
 		this.troopsPerTurn = troopsPerTurn;
 	}
 
-	public int getNumberOfTerritories() {
-		return numberOfTerritories;
+	public void addTerritory(Country territory) {
+		territories.add(territory);
 	}
 
-	public void setNumberOfTerritories(int numberOfTerritories) {
-		this.numberOfTerritories = numberOfTerritories;
+	public Collection<Country> getTerritories() {
+		return territories;
 	}
 
 	public int getTroopsPerTurn() {

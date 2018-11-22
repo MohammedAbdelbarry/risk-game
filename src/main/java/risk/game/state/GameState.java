@@ -75,12 +75,13 @@ public class GameState {
 	public boolean isLegalAttack(AttackAction attack) {
 		return isLegalAttack(attack, player);
 	}
-	public PlayerState getPlayer1State() {
-		return player1State;
-	}
 
-	public PlayerState getPlayer2State() {
-		return player2State;
+	public PlayerState getPlayerState(Player player) {
+		if(player == Player.PLAYER1) {
+			return player1State;
+		} else {
+			return player2State;
+		}
 	}
 
 	public GameState forecastAllocation(AllocationAction move) {
