@@ -1,23 +1,15 @@
 package risk.game.state.action;
 
 import risk.game.state.Country;
-import risk.game.state.Phase;
-
 import java.util.Objects;
 
-public class Action {
-    private Phase actionType;
+public class AllocationAction {
     private Country country;
     private int troops;
 
-    public Action(Phase actionType, Country country, int troops) {
-        this.actionType = actionType;
+    public AllocationAction(Country country, int troops) {
         this.country = country;
         this.troops = troops;
-    }
-
-    public Phase getActionType() {
-        return actionType;
     }
 
     public Country getCountry() {
@@ -36,14 +28,13 @@ public class Action {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Action action = (Action) o;
-        return troops == action.troops &&
-                actionType == action.actionType &&
-                Objects.equals(country, action.country);
+        AllocationAction allocationAction = (AllocationAction) o;
+        return troops == allocationAction.troops &&
+                Objects.equals(country, allocationAction.country);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(actionType, country, troops);
+        return Objects.hash(country, troops);
     }
 }
