@@ -54,7 +54,8 @@ public class GameState {
 	}
 
 	public Collection<AttackAction> getPossibleAttacks(Player activePlayer) {
-		Collection<AttackAction> moves= new ArrayList<>();
+		Collection<AttackAction> moves = new ArrayList<>();
+		moves.add(AttackAction.SKIP_ACTION);
 		for (Node node : worldMap.getEachNode()) {
 			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
 			if (country.getControllingPlayer() == activePlayer) {
@@ -89,8 +90,8 @@ public class GameState {
 	}
 
 	public boolean isLegalAttack(AttackAction attack, Player player) {
-		return attack.getAttackingCountry().canAttack(attack.getAttackedCountry())
-				&& attack.getAttackingCountry().getControllingPlayer() == player;
+		return attack == AttackAction.SKIP_ACTION || (attack.getAttackingCountry().canAttack(attack.getAttackedCountry())
+				&& attack.getAttackingCountry().getControllingPlayer() == player);
 	}
 
 	public boolean isLegalAttack(AttackAction attack) {
@@ -130,6 +131,9 @@ public class GameState {
 		GameState newState = new GameState(this);
 		newState.player = this.player.getOpponent();
 		newState.phase = Phase.ALLOCATE;
+		if (move == AttackAction.SKIP_ACTION) {
+			return newState;
+		}
 		updateGraphCountry(newState.worldMap, move.getModifiedAttacker());
 		updateGraphCountry(newState.worldMap, move.getModifiedAttackee());
 

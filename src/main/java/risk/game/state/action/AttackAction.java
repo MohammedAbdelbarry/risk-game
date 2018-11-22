@@ -5,6 +5,7 @@ import risk.game.state.Country;
 import java.util.Objects;
 
 public class AttackAction implements Action {
+    public static final AttackAction SKIP_ACTION = new AttackAction(null, null, -1);
     private Country attackingCountry;
     private Country attackedCountry;
     private int troops;

@@ -44,9 +44,6 @@ public class GreedyAgent extends GameAgent {
                 .map(state::forcastMove)
                 .max(Comparator.comparingInt(newState -> heuristic.apply(newState, player)));
 
-        if (!possibleState.isPresent()) {
-            return state;
-        }
-        possibleState.get();
+        return possibleState.orElse(state);
     }
 }

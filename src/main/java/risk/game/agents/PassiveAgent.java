@@ -5,8 +5,10 @@ import java.util.Optional;
 
 import risk.game.state.Country;
 import risk.game.state.GameState;
+import risk.game.state.Phase;
 import risk.game.state.Player;
 import risk.game.state.action.AllocationAction;
+import risk.game.state.action.AttackAction;
 
 public class PassiveAgent extends GameAgent {
 
@@ -15,6 +17,10 @@ public class PassiveAgent extends GameAgent {
 
 		if (state.getActivePlayer() != player) {
 			return state;
+		}
+
+		if (!state.terminalTest() && state.getCurrentPhase() == Phase.ATTACK) {
+			return state.forecastAttack(AttackAction.SKIP_ACTION);
 		}
 
 		Collection<AllocationAction> allocationActions = state.getPossibleAllocations();
