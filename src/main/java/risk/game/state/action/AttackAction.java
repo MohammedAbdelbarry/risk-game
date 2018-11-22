@@ -4,7 +4,7 @@ import risk.game.state.Country;
 
 import java.util.Objects;
 
-public class AttackAction {
+public class AttackAction implements Action {
     private Country attackingCountry;
     private Country attackedCountry;
     private int troops;

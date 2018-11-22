@@ -4,6 +4,7 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.Graphs;
+import risk.game.state.action.Action;
 import risk.game.state.action.AllocationAction;
 import risk.game.state.action.AttackAction;
 import risk.game.util.Constants;
@@ -140,6 +141,16 @@ public class GameState {
 		newState.player2State.setTroopsPerTurn(newState.calculateTroopsPerTurn(Player.PLAYER2)
 				+ getPlayerAttackBonus(Player.PLAYER2, player));
 		return newState;
+	}
+
+	public GameState forcastMove(Action action) {
+		if (action instanceof AttackAction) {
+			return forecastAttack((AttackAction) action);
+		} else if (action instanceof AllocationAction) {
+			return forecastAllocation((AllocationAction) action);
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	private int getPlayerAttackBonus(Player player, Player attackingPlayer) {

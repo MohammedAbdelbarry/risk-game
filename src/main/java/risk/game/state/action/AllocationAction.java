@@ -3,7 +3,7 @@ package risk.game.state.action;
 import risk.game.state.Country;
 import java.util.Objects;
 
-public class AllocationAction {
+public class AllocationAction implements Action {
     private Country country;
     private int troops;
 
