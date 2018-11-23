@@ -1,15 +1,16 @@
 package risk.game.model.state;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.Graphs;
+
 import risk.game.model.state.action.Action;
 import risk.game.model.state.action.AllocationAction;
 import risk.game.model.state.action.AttackAction;
 import risk.game.model.util.Constants;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class GameState {
 	private Player player;
