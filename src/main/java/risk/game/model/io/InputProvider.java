@@ -32,8 +32,8 @@ public class InputProvider {
         for (int i = 0; i < numEdges; i++) {
             int source = in.nextInt();
             int target = in.nextInt();
-            map.addEdge(source + "->" + target, String.valueOf(source), String.valueOf(target));
-            map.addEdge(target + "->" + source, String.valueOf(target), String.valueOf(source));
+            map.addEdge(source + "->" + target, String.valueOf(source), String.valueOf(target), true);
+            map.addEdge(target + "->" + source, String.valueOf(target), String.valueOf(source), true);
         }
 
         int numContinents = in.nextInt();

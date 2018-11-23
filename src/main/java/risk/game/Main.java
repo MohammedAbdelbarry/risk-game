@@ -1,21 +1,27 @@
 package risk.game;
 
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.settings.GameSettings;
+import javafx.scene.control.TextField;
 import risk.game.controller.GameController;
+import risk.game.model.agents.GreedyAgent;
+import risk.game.model.agents.PassiveAgent;
+import risk.game.model.state.Country;
+import risk.game.model.util.Constants;
 
 public class Main extends GameApplication {
 
 	private GameController controller;
 
 	public static void main(String[] args)  {
-//		System.setProperty("org.graphstream.ui", "javafx");
-//		System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		launch(args);
 	}
 
 	@Override
 	protected void initSettings(GameSettings gameSettings) {
+		gameSettings.setFullScreenAllowed(true);
+		gameSettings.setManualResizeEnabled(true);
 		gameSettings.setHeight(600);
 		gameSettings.setWidth(800);
 		gameSettings.setTitle("Risk");
@@ -27,6 +33,19 @@ public class Main extends GameApplication {
 	@Override
 	protected void initGame() {
 		super.initGame();
-		controller = new GameController(this);
+		Entities.builder().at(0 ,0).viewFromNode(new TextField("test")).buildAndAttach(getGameWorld());
+		controller = new GameController(this, new PassiveAgent(),
+				new GreedyAgent((state, player) -> {
+					if (state.isWinner(player)) {
+						return Long.MAX_VALUE;
+					} else if (state.isLoser(player)) {
+						return Long.MIN_VALUE;
+					}
+
+					return state.getWorldMap().
+							nodes().map(node -> node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class)).
+							map(Country::getControllingPlayer).filter(p -> p == player).count();
+
+				}));
 	}
 }

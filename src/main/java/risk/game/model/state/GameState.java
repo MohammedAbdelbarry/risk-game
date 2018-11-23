@@ -65,7 +65,11 @@ public class GameState {
 			if (country.getControllingPlayer() == activePlayer) {
 				node.leavingEdges().forEach(edge -> {
 					Country otherCountry = edge.getTargetNode().getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
-					if (country.canAttack(otherCountry)) {
+					if (activePlayer == Player.PLAYER2) {
+//						System.out.println(country.getId() + "," + otherCountry.getId() + ":" + country.canAttack(otherCountry));
+//						System.out.println(node.getId() + "," + edge.getTargetNode().getId() + ":" + country.canAttack(otherCountry));
+					}
+ 					if (country.canAttack(otherCountry)) {
 						for (int troops = otherCountry.getNumberOfTroops() + 1;
 							 troops <= country.getNumberOfTroops() - 1; troops++) {
 							moves.add(new AttackAction(country, otherCountry, troops));

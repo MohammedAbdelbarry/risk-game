@@ -12,14 +12,14 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class GreedyAgent extends GameAgent {
-    private BiFunction<GameState, Player, Integer> heuristic;
+    private BiFunction<GameState, Player, Long> heuristic;
 
-    public GreedyAgent(BiFunction<GameState, Player, Integer> heuristic) {
+    public GreedyAgent(BiFunction<GameState, Player, Long> heuristic) {
         this.heuristic = heuristic;
     }
 
     public GreedyAgent() {
-        this((state, player) -> 0);
+        this((state, player) -> 0L);
     }
 
     @Override
@@ -27,6 +27,8 @@ public class GreedyAgent extends GameAgent {
         if (state.getActivePlayer() != player) {
             return state;
         }
+
+        System.out.println(state.getActivePlayer() + ":" + state.getCurrentPhase());
 
         Collection<Action> moves;
         if (state.getCurrentPhase() == Phase.ATTACK) {
@@ -39,10 +41,12 @@ public class GreedyAgent extends GameAgent {
             return state;
         }
 
+        System.out.println(moves);
+
         Optional<GameState> possibleState = moves
                 .stream()
                 .map(state::forcastMove)
-                .max(Comparator.comparingInt(newState -> heuristic.apply(newState, player)));
+                .max(Comparator.comparingLong(newState -> heuristic.apply(newState, player)));
 
         return possibleState.orElse(state);
     }

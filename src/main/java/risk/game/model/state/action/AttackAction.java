@@ -71,4 +71,14 @@ public class AttackAction implements Action {
     public int hashCode() {
         return Objects.hash(attackingCountry, attackedCountry, troops);
     }
+
+
+    @Override
+    public String toString() {
+        if (this == SKIP_ACTION) {
+            return "Skip";
+        }
+        return String.format("%s.Attack(%d, %d, %d)", attackingCountry.getControllingPlayer(),
+                attackingCountry.getId(), attackedCountry.getId(), troops);
+    }
 }

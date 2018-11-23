@@ -1,7 +1,12 @@
 package risk.game.view;
 
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.Entity;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.ui.fx_viewer.FxDefaultView;
 import org.graphstream.ui.fx_viewer.FxViewer;
@@ -15,22 +20,22 @@ import risk.game.model.util.Constants;
 public class GameVisualizer {
     private GameApplication gameApp;
     private Graph map;
+    private Entity mapEntity;
 
     public GameVisualizer(GameApplication gameApp, GameState initialGameState) {
         this.gameApp = gameApp;
         map = Graphs.clone(initialGameState.getWorldMap());
-        visualize(initialGameState);
+        init();
     }
 
     private void updateUIClass(Graph map) {
         map.nodes().forEach(node -> {
             Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
             node.setAttribute(Constants.UI_CLASS_ATTRIBUTE, country.getControllingPlayer().toString());
-            System.out.println(node.getAttribute(Constants.UI_CLASS_ATTRIBUTE));
         });
     }
 
-    private void visualize(GameState state) {
+    private void init() {
         map.setAttribute("ui.stylesheet", "url('graph.css')");
         map.setAttribute("ui.quality");
         map.setAttribute("ui.antialias");
@@ -44,9 +49,22 @@ public class GameVisualizer {
 
         GraphRenderer renderer = new FxGraphRenderer();
         FxDefaultView view = (FxDefaultView) viewer.addView(FxViewer.DEFAULT_VIEW_ID, renderer);
-
-        gameApp.getGameScene().addUINode(view);
-
+        view.setBackground(new Background(new BackgroundFill(null, null, null)));
+        mapEntity = Entities.builder().viewFromNode(view).buildAndAttach(gameApp.getGameWorld());
     }
 
+    public void visualize(GameState state) {
+        Graph newMap = state.getWorldMap();
+        map.nodes().forEach(node -> {
+            Node newNode = newMap.getNode(node.getId());
+            newNode.attributeKeys().forEach(key -> {
+                node.setAttribute(key, newNode.getAttribute(key));
+            });
+        });
+        updateUIClass(map);
+    }
+
+    public Entity getMapEntity() {
+        return mapEntity;
+    }
 }
