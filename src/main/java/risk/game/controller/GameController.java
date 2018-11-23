@@ -4,6 +4,7 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.gameplay.rpg.InGameClock;
 import com.almasb.fxgl.ui.UIController;
+import risk.game.model.agents.AggressiveAgent;
 import risk.game.model.agents.GameAgent;
 import risk.game.model.agents.PassiveAgent;
 import risk.game.model.io.InputProvider;
@@ -26,10 +27,8 @@ public class GameController extends Component {
     public GameController(GameApplication app, GameAgent player1, GameAgent player2) {
         try {
             gameState = InputProvider.getInitialGameState(new File("./in.txt"));
-            gameState.getWorldMap().nodes().forEach(node -> node.leavingEdges().forEach(edge -> System.out.println(
-                    "Edge: (" + edge.getSourceNode() + ", " + edge.getTargetNode() + ")")));
             this.player1 = player1;
-            this.player2 = player2;
+            this.player2 = new AggressiveAgent(gameState.getContinents());
             visualizer = new GameVisualizer(app, gameState);
             visualizer.getMapEntity().addComponent(this);
         } catch (FileNotFoundException e) {

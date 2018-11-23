@@ -211,4 +211,8 @@ public class GameState {
 	public Phase getNextPhase() {
 		return phase.getNextPhase();
 	}
+
+	public Collection<Continent> getContinents() {
+		return continents;
+	}
 }
