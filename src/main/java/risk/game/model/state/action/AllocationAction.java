@@ -1,6 +1,7 @@
-package risk.game.state.action;
+package risk.game.model.state.action;
 
-import risk.game.state.Country;
+import risk.game.model.state.Country;
+
 import java.util.Objects;
 
 public class AllocationAction implements Action {

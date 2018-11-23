@@ -1,0 +1,9 @@
+.menu-button {
+    -fx-background-color: rgba(50, 50, 50, 0.9);
+    -fx-text-fill: white;
+    -fx-border-radius: 0 0 0 0;
+  	-fx-background-radius: 0 0 0 0;
+}
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 1 0 1;
+}

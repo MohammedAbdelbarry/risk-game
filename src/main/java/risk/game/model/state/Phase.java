@@ -1,4 +1,4 @@
-package risk.game.state;
+package risk.game.model.state;
 
 public enum Phase {
     ALLOCATE("Allocate"),

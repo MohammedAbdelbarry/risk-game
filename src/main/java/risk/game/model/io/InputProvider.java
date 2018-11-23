@@ -1,16 +1,18 @@
-package risk.game.io;
+package risk.game.model.io;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
-import risk.game.state.Continent;
-import risk.game.state.Country;
-import risk.game.state.GameState;
-import risk.game.state.Player;
-import risk.game.util.Constants;
+import risk.game.model.state.Continent;
+import risk.game.model.state.Country;
+import risk.game.model.state.GameState;
+import risk.game.model.state.Player;
+import risk.game.model.util.Constants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
@@ -21,6 +23,7 @@ public class InputProvider {
         int numVertices = in.nextInt();
         int numEdges = in.nextInt();
         Graph map = new SingleGraph("world-map", false, true, numVertices, numEdges);
+
         for (int i = 1; i <= numVertices; i++) {
             Node newNode = map.addNode(String.valueOf(i));
             newNode.setAttribute(Constants.ID_ATTRIBUTE, i);
@@ -48,7 +51,9 @@ public class InputProvider {
             int player = in.nextInt();
             int units = in.nextInt();
             Country country = new Country(i, Player.valueOf(player), units);
-            map.getNode(String.valueOf(i)).setAttribute(Constants.COUNTRY_ATTRIBUTE, country);
+            Node node = map.getNode(String.valueOf(i));
+            node.setAttribute(Constants.COUNTRY_ATTRIBUTE, country);
+            node.setAttribute(Constants.UI_LABEL_ATTRIBUTE, i + " (" + units + ")");
         }
         in.close();
         return new GameState(map, continents);

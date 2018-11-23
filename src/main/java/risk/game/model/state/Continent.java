@@ -1,4 +1,4 @@
-package risk.game.state;
+package risk.game.model.state;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -24,5 +24,10 @@ public class Continent {
 
     public boolean isSubsetOf(Collection<Country> countries) {
         return countries.stream().map(Country::getId).collect(Collectors.toSet()).containsAll(countriesIds);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Continent: %s & Bonus: %d", countriesIds, bonus);
     }
 }

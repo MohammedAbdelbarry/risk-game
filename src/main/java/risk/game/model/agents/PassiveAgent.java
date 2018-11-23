@@ -1,14 +1,14 @@
-package risk.game.agents;
+package risk.game.model.agents;
+
+import risk.game.model.state.Country;
+import risk.game.model.state.GameState;
+import risk.game.model.state.Phase;
+import risk.game.model.state.Player;
+import risk.game.model.state.action.AllocationAction;
+import risk.game.model.state.action.AttackAction;
 
 import java.util.Collection;
 import java.util.Optional;
-
-import risk.game.state.Country;
-import risk.game.state.GameState;
-import risk.game.state.Phase;
-import risk.game.state.Player;
-import risk.game.state.action.AllocationAction;
-import risk.game.state.action.AttackAction;
 
 public class PassiveAgent extends GameAgent {
 

@@ -1,7 +1,7 @@
-package risk.game.agents;
+package risk.game.model.agents;
 
-import risk.game.state.GameState;
-import risk.game.state.Player;
+import risk.game.model.state.GameState;
+import risk.game.model.state.Player;
 
 public class AggressiveAgent extends GameAgent{
 

@@ -1,18 +1,32 @@
 package risk.game;
 
-import risk.game.io.InputProvider;
-import risk.game.state.GameState;
+import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.settings.GameSettings;
+import risk.game.controller.GameController;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+public class Main extends GameApplication {
 
-public class Main {
+	private GameController controller;
 
-	public static void main(String[] args) {
-		try {
-			GameState initialGameState = InputProvider.getInitialGameState(new File("TEST"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+	public static void main(String[] args)  {
+//		System.setProperty("org.graphstream.ui", "javafx");
+//		System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+		launch(args);
+	}
+
+	@Override
+	protected void initSettings(GameSettings gameSettings) {
+		gameSettings.setHeight(600);
+		gameSettings.setWidth(800);
+		gameSettings.setTitle("Risk");
+		gameSettings.setVersion("1.0");
+		gameSettings.setAppIcon("Risk-Icon.png");
+		gameSettings.setMenuEnabled(true);
+	}
+
+	@Override
+	protected void initGame() {
+		super.initGame();
+		controller = new GameController(this);
 	}
 }

@@ -1,8 +1,8 @@
-package risk.game.state;
+package risk.game.model.state;
 
 public enum Player {
-    PLAYER1("Player 1"),
-    PLAYER2("Player 2");
+    PLAYER1("player1"),
+    PLAYER2("player2");
 
     private String value;
     Player(String value) {

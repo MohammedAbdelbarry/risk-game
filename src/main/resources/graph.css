@@ -1,0 +1,27 @@
+node {
+    fill-color: white;
+    size: 35px;
+    stroke-mode: plain;
+    stroke-color: #000000;
+    stroke-width: 1px;
+   	fill-mode: dyn-plain;
+	text-style: bold;
+    text-color: white;
+}
+edge {
+    text-alignment: center;
+    text-size: 16;
+    text-color: orange;
+    fill-color: black;
+    text-background-mode: plain;
+	shape: cubic-curve;
+}
+node.player1 {
+	fill-color: blue;
+}
+node.player2 {
+	fill-color: red;
+}
+edge.highlighted {
+	fill-color: green;
+}

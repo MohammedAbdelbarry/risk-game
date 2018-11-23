@@ -1,9 +1,9 @@
-package risk.game.agents;
+package risk.game.model.agents;
 
-import risk.game.state.GameState;
-import risk.game.state.Phase;
-import risk.game.state.Player;
-import risk.game.state.action.Action;
+import risk.game.model.state.GameState;
+import risk.game.model.state.Phase;
+import risk.game.model.state.Player;
+import risk.game.model.state.action.Action;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +29,7 @@ public class GreedyAgent extends GameAgent {
         }
 
         Collection<Action> moves;
-        if (state.getCurrentPhase() == Phase.ALLOCATE) {
+        if (state.getCurrentPhase() == Phase.ATTACK) {
             moves = new ArrayList<>(state.getPossibleAttacks());
         } else {
             moves = new ArrayList<>(state.getPossibleAllocations());

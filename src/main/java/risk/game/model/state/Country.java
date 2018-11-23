@@ -1,13 +1,9 @@
-package risk.game.state;
+package risk.game.model.state;
 
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import risk.game.util.Constants;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 public class Country {
 	private int id;
@@ -88,4 +84,9 @@ public class Country {
 	public int hashCode() {
 		return Objects.hash(id, numberOfTroops, controllingPlayer);
 	}
+
+	@Override
+    public String toString() {
+	    return String.format("ID: %d & Owner: %s & Units: %d", id, controllingPlayer, numberOfTroops);
+    }
 }

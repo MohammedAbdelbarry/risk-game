@@ -1,13 +1,12 @@
-package risk.game.state;
+package risk.game.model.state;
 
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.Graphs;
-import risk.game.state.action.Action;
-import risk.game.state.action.AllocationAction;
-import risk.game.state.action.AttackAction;
-import risk.game.util.Constants;
+import risk.game.model.state.action.Action;
+import risk.game.model.state.action.AllocationAction;
+import risk.game.model.state.action.AttackAction;
+import risk.game.model.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +17,8 @@ public class GameState {
 	private Graph worldMap;
 	private PlayerState player1State;
 	private PlayerState player2State;
-	Collection<Continent> continents;
+	private Collection<Continent> continents;
+
 	private static final int NUM_TROOPS = 2;
 
 	public GameState(Graph worldMap, Collection<Continent> continents) {
@@ -28,7 +28,7 @@ public class GameState {
 		phase = Phase.ALLOCATE;
 
 		player1State = new PlayerState(worldMap, Player.PLAYER1, NUM_TROOPS);
-		player1State = new PlayerState(worldMap, Player.PLAYER2, NUM_TROOPS);
+		player2State = new PlayerState(worldMap, Player.PLAYER2, NUM_TROOPS);
 		player1State.setTroopsPerTurn(calculateTroopsPerTurn(Player.PLAYER1));
 		player2State.setTroopsPerTurn(calculateTroopsPerTurn(Player.PLAYER2));
 	}
@@ -42,24 +42,28 @@ public class GameState {
 		continents = other.continents;
 	}
 
-	public Collection<AllocationAction> getPossibleAllocations(Player activePlayer) {
+    public Graph getWorldMap() {
+        return worldMap;
+    }
+
+    public Collection<AllocationAction> getPossibleAllocations(Player activePlayer) {
 		Collection<AllocationAction> moves = new ArrayList<>();
-		for (Node node : worldMap.getEachNode()) {
+		worldMap.nodes().forEach(node -> {
 			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
 			if (country.getControllingPlayer() == activePlayer) {
 				moves.add(new AllocationAction(country, getPlayerState(activePlayer).getTroopsPerTurn()));
 			}
-		}
+		});
 		return moves;
 	}
 
 	public Collection<AttackAction> getPossibleAttacks(Player activePlayer) {
 		Collection<AttackAction> moves = new ArrayList<>();
 		moves.add(AttackAction.SKIP_ACTION);
-		for (Node node : worldMap.getEachNode()) {
+		worldMap.nodes().forEach(node -> {
 			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
 			if (country.getControllingPlayer() == activePlayer) {
-				for (Edge edge : node.getEachLeavingEdge()) {
+				node.leavingEdges().forEach(edge -> {
 					Country otherCountry = edge.getTargetNode().getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
 					if (country.canAttack(otherCountry)) {
 						for (int troops = otherCountry.getNumberOfTroops() + 1;
@@ -67,9 +71,9 @@ public class GameState {
 							moves.add(new AttackAction(country, otherCountry, troops));
 						}
 					}
-				}
+				});
 			}
-		}
+		});
 		return moves;
 	}
 
@@ -107,13 +111,10 @@ public class GameState {
 	}
 
 	private void updateGraphCountry(Graph graph, Country newCountry) {
-		for (Node node : graph.getEachNode()) {
-			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
-			if (country.getId() == newCountry.getId()) {
-				node.setAttribute(Constants.COUNTRY_ATTRIBUTE, newCountry);
-				return;
-			}
-		}
+		Node node = graph.getNode(String.valueOf(newCountry.getId()));
+		node.setAttribute(Constants.COUNTRY_ATTRIBUTE, newCountry);
+		node.setAttribute(Constants.UI_LABEL_ATTRIBUTE,
+				newCountry.getId() + " (" + newCountry.getNumberOfTroops() + ")");
 	}
 
 	public GameState forecastAllocation(AllocationAction move) {
@@ -177,13 +178,10 @@ public class GameState {
 	}
 
 	public boolean isWinner(Player player) {
-		for (Node node : worldMap.getEachNode()) {
+		return worldMap.nodes().noneMatch(node -> {
 			Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
-			if (country.getControllingPlayer() != player) {
-				return false;
-			}
-		}
-		return true;
+			return country.getControllingPlayer() != player;
+		});
 	}
 
 	public boolean isLoser(Player player) {
