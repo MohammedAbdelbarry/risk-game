@@ -3,10 +3,10 @@ node {
     size: 35px;
     stroke-mode: plain;
     stroke-color: #000000;
-    stroke-width: 1px;
-   	fill-mode: dyn-plain;
+    stroke-width: 2px;
+   	fill-mode: plain;
 	text-style: bold;
-    text-color: white;
+    text-color: black;
 }
 edge {
     text-alignment: center;
@@ -15,12 +15,13 @@ edge {
     fill-color: black;
     text-background-mode: plain;
 	shape: cubic-curve;
+	size: 2;
 }
 node.player1 {
-	fill-color: blue;
+	stroke-color: blue;
 }
 node.player2 {
-	fill-color: red;
+	stroke-color: red;
 }
 edge.highlighted {
 	fill-color: green;

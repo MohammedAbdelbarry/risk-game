@@ -23,19 +23,19 @@ public class PacifistAgent extends GameAgent{
 		}
 		
 		Collection<AttackAction> attackActions = state.getPossibleAttacks();
-		if(terminalTest(state, attackActions)) {
+		if (terminalTest(state, attackActions)) {
 			return state;
 		}
-		
+
 		Optional<AttackAction> possibleAction = attackActions
-				.stream().min((action1, action2) -> {
+				.stream().filter(action -> action != AttackAction.SKIP_ACTION).min((action1, action2) -> {
 					Country country1 = action1.getAttackedCountry();
 					Country country2 = action2.getAttackedCountry();
-						return country1.getNumberOfTroops() - country2.getNumberOfTroops();
+					return country1.getNumberOfTroops() - country2.getNumberOfTroops();
 				});
 		
 		if (!possibleAction.isPresent()) {
-			return state;
+			return state.forecastAttack(AttackAction.SKIP_ACTION);
 		}
 
 		AttackAction bestAction = possibleAction.get();

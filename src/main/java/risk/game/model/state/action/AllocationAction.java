@@ -44,4 +44,9 @@ public class AllocationAction implements Action {
     public int hashCode() {
         return Objects.hash(country, troops);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s.Allocate(%d, %d)", country.getControllingPlayer(), country.getId(), troops);
+    }
 }

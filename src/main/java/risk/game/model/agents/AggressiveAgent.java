@@ -1,13 +1,5 @@
 package risk.game.model.agents;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.PriorityQueue;
-
 import risk.game.model.state.Continent;
 import risk.game.model.state.Country;
 import risk.game.model.state.GameState;
@@ -17,9 +9,17 @@ import risk.game.model.state.PlayerState;
 import risk.game.model.state.action.AllocationAction;
 import risk.game.model.state.action.AttackAction;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.PriorityQueue;
+
 public class AggressiveAgent extends GameAgent {
 
-	Collection<Continent> continents;
+	private Collection<Continent> continents;
 
 	public AggressiveAgent(Collection<Continent> continents) {
 		this.continents = continents;
@@ -27,8 +27,9 @@ public class AggressiveAgent extends GameAgent {
 
 	@Override
 	public GameState play(GameState state, Player player) {
-		if (state.getInactivePlayer() != player)
+		if (state.getActivePlayer() != player) {
 			return state;
+		}
 
 		if (state.getCurrentPhase() == Phase.ATTACK)
 			return getAttackMove(state);
@@ -43,20 +44,22 @@ public class AggressiveAgent extends GameAgent {
 					Country country1 = action1.getCountry();
 					Country country2 = action2.getCountry();
 					if(country1.getNumberOfTroops() == country2.getNumberOfTroops()) {
-						return country1.getId() - country2.getId();
+						return -country1.getId() + country2.getId();
 					} else {
 						return country1.getNumberOfTroops() - country2.getNumberOfTroops();
 					}		
 				});
-		if(!possibleAction.isPresent())
+		if (!possibleAction.isPresent()) {
 			return state;
-		
+		}
+
 		AllocationAction bestAction = possibleAction.get();
+		System.out.println(bestAction);
 		
 		return state.forecastAllocation(bestAction);
 	}
 
-	public GameState getAttackMove(GameState state) {
+	private GameState getAttackMove(GameState state) {
 		Collection<AttackAction> possibleAttacks = state.getPossibleAttacks();
 		if (terminalTest(state, possibleAttacks)) {
 			return state;
@@ -87,16 +90,14 @@ public class AggressiveAgent extends GameAgent {
 		//the same number of remaining countries choose the one with most bonus
 
 		PriorityQueue<Entry<Continent, Integer>> queue =
-				new PriorityQueue<>( new Comparator<Entry<Continent, Integer>>() {
-					@Override
-					public int compare(Entry<Continent, Integer> o1, Entry<Continent, Integer> o2) {
-						if(o1.getValue() == o2.getValue())
-							return o2.getKey().getBonus() - o1.getKey().getBonus();
-						return o1.getValue() - o2.getValue();
+				new PriorityQueue<>((o1, o2) -> {
+					if(Objects.equals(o1.getValue(), o2.getValue())) {
+						return o2.getKey().getBonus() - o1.getKey().getBonus();
 					}
+					return o1.getValue() - o2.getValue();
 				});
-		
-		remainingNumberOfCountries.entrySet().forEach(entry -> queue.add(entry));
+
+		queue.addAll(remainingNumberOfCountries.entrySet());
 
 		//iterate on the countries in higher priority continent and choose the 
 		//one which can be attacked and have the highest number of troops
@@ -106,21 +107,26 @@ public class AggressiveAgent extends GameAgent {
 		while (!queue.isEmpty()) {
 			Entry e = queue.poll();
 			for (AttackAction action : possibleAttacks) {
-				int attackedCountryID = action.getAttackedCountry().getId();
-				if (((Continent) e.getKey()).getCountriesIds().contains(attackedCountryID)) {
-					if(attackMove == null ||
-							attackMove.getAttackedCountry().getNumberOfTroops() < action.getAttackedCountry().getNumberOfTroops())
-					attackMove = action;
+				if (action != AttackAction.SKIP_ACTION) {
+					int attackedCountryID = action.getAttackedCountry().getId();
+					if (((Continent) e.getKey()).getCountriesIds().contains(attackedCountryID)) {
+						if (attackMove == null ||
+								attackMove.getAttackedCountry().getNumberOfTroops()
+										< action.getAttackedCountry().getNumberOfTroops()) {
+							attackMove = action;
+						}
+					}
 				}
 			}
-			if(attackMove != null)
+			if (attackMove != null) {
 				break;
-			
+			}
 		}
 
-		if(attackMove == null)
-			return state;
-		
+		if (attackMove == null) {
+			return state.forecastAttack(AttackAction.SKIP_ACTION);
+		}
+
 		return state.forecastAttack(attackMove);
 	}
 
