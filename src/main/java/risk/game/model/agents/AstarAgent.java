@@ -3,7 +3,9 @@ package risk.game.model.agents;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.Stack;
 import java.util.function.BiFunction;
 
@@ -15,19 +17,19 @@ import risk.game.model.state.action.Action;
 
 public class AstarAgent extends GameAgent {
 
-	private BiFunction<GameState, Player, Integer> heuristic;
+	private BiFunction<GameState, Player, Long> heuristic;
 	private Stack<AstarNode> expanded;
 	private int turn;
 	private int expandedNodes;
 
-	public AstarAgent(BiFunction<GameState, Player, Integer> heuristic) {
+	public AstarAgent(BiFunction<GameState, Player, Long> heuristic) {
 		this.heuristic = heuristic;
 		turn = 0;
 		expandedNodes = 0;
 	}
 
 	public AstarAgent() {
-		this((state, player) -> 0);
+		this((state, player) -> 0L);
 	}
 
 	@Override
@@ -35,20 +37,19 @@ public class AstarAgent extends GameAgent {
 		if (state.getActivePlayer() != player) {
 			return state;
 		}
-		if (expanded.isEmpty())
+		if (expanded == null) {
 			init(state, player);
+		} else if (expanded.isEmpty()) {
+			return state;
+		}
 
 		return expanded.pop().getGameState();
 	}
 
 	public void init(GameState state, Player player) {
-		PriorityQueue<AstarNode> frontier = new PriorityQueue<>(new Comparator<AstarNode>() {
-			@Override
-			public int compare(AstarNode o1, AstarNode o2) {
-				return o1.getCost() - o2.getCost();
-			}
-		});
-
+		expanded = new Stack<>();
+		PriorityQueue<AstarNode> frontier = new PriorityQueue<>(Comparator.comparingLong(AstarNode::getCost));
+		Set<AstarNode> visited = new HashSet<>();
 		AstarNode node = new AstarNode(state, heuristic.apply(state, player), null);
 		frontier.add(node);
 		Collection<Action> moves;
@@ -56,7 +57,15 @@ public class AstarAgent extends GameAgent {
 
 		while (!frontier.isEmpty()) {
 			node = frontier.poll();
+			visited.add(node);
 			state = node.getGameState();
+
+			if (state.isWinner(player)) {
+				terminalState = node;
+				break;
+			} else if (state.isLoser(player)) {
+				continue;
+			}
 
 			if (state.getCurrentPhase() == Phase.ATTACK) {
 				moves = new ArrayList<>(state.getPossibleAttacks());
@@ -64,8 +73,9 @@ public class AstarAgent extends GameAgent {
 				moves = new ArrayList<>(state.getPossibleAllocations());
 			}
 
-			if (state.getCurrentPhase() == Phase.ATTACK && player == Player.PLAYER2)
+			if (state.getCurrentPhase() == Phase.ATTACK && player == Player.PLAYER2) {
 				turn++;
+			}
 
 			for (Action move : moves) {
 				GameState newState = state.forcastMove(move);
@@ -73,9 +83,11 @@ public class AstarAgent extends GameAgent {
 					PassiveAgent agent = new PassiveAgent();
 					newState = agent.play(agent.play(newState, newState.getActivePlayer()), newState.getActivePlayer());
 				}
-				int f = turn + heuristic.apply(newState, newState.getActivePlayer());
+				long f = turn + heuristic.apply(newState, newState.getActivePlayer());
 				AstarNode n = new AstarNode(newState, f, node);
-				frontier.add(n);
+				if (!visited.contains(n)) {
+					frontier.add(n);
+				}
 			}
 		}
 

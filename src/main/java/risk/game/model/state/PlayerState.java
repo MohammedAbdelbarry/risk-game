@@ -2,6 +2,7 @@ package risk.game.model.state;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import org.graphstream.graph.Graph;
 
@@ -43,4 +44,21 @@ public class PlayerState {
 		this.troopsPerTurn = troopsPerTurn;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		PlayerState that = (PlayerState) o;
+		return troopsPerTurn == that.troopsPerTurn &&
+				Objects.equals(territories, that.territories);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(troopsPerTurn, territories);
+	}
 }

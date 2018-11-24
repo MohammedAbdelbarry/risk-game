@@ -2,6 +2,7 @@ package risk.game.model.state;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -215,5 +216,27 @@ public class GameState {
 
 	public Collection<Continent> getContinents() {
 		return continents;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		GameState gameState = (GameState) o;
+		return player == gameState.player &&
+				phase == gameState.phase &&
+				Objects.equals(worldMap, gameState.worldMap) &&
+				Objects.equals(player1State, gameState.player1State) &&
+				Objects.equals(player2State, gameState.player2State) &&
+				Objects.equals(continents, gameState.continents);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(player, phase, worldMap, player1State, player2State, continents);
 	}
 }

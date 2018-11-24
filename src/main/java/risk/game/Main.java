@@ -3,8 +3,10 @@ package risk.game;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.settings.GameSettings;
 import risk.game.controller.GameController;
+import risk.game.model.agents.AstarAgent;
 import risk.game.model.agents.GreedyAgent;
 import risk.game.model.agents.PassiveAgent;
+import risk.game.model.agents.RealtimeAstarAgent;
 import risk.game.model.io.InputProvider;
 import risk.game.model.state.Country;
 import risk.game.model.state.GameState;
@@ -37,7 +39,7 @@ public class Main extends GameApplication {
 		try {
 			GameState initialGameState = InputProvider.getInitialGameState(new File("./in.txt"));
 			GameController controller = new GameController(this, new PassiveAgent(),
-					new GreedyAgent((state, player) -> {
+					new AstarAgent((state, player) -> {
 						if (state.isWinner(player)) {
 							return Long.MIN_VALUE;
 						} else if (state.isLoser(player)) {
