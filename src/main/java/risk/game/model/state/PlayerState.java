@@ -1,10 +1,11 @@
 package risk.game.model.state;
 
-import org.graphstream.graph.Graph;
-import risk.game.model.util.Constants;
-
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.graphstream.graph.Graph;
+
+import risk.game.model.util.Constants;
 
 public class PlayerState {
 	private int troopsPerTurn;
