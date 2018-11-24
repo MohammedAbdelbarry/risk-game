@@ -33,45 +33,41 @@ public class RealtimeAstarAgent extends GameAgent {
 		if (state.getActivePlayer() != player) {
 			return state;
 		}
-		
+
 		PriorityQueue<RTAnode> frontier = new PriorityQueue<>(new Comparator<RTAnode>() {
 			@Override
 			public int compare(RTAnode o1, RTAnode o2) {
-				return heuristic.apply(o1.getGameState(),
-						o1.getGameState().getActivePlayer()) - heuristic.apply(o2.getGameState(),
-								o2.getGameState().getActivePlayer());
+				return heuristic.apply(o1.getGameState(), o1.getGameState().getActivePlayer())
+						- heuristic.apply(o2.getGameState(), o2.getGameState().getActivePlayer());
 			}
 		});
-		
+
 		RTAnode node = new RTAnode(state, null);
 		frontier.add(node);
 		int alpha = Integer.MAX_VALUE;
 		Collection<Action> moves;
 		RTAnode bestMove = null;
-		
+
 		while (!frontier.isEmpty()) {
 			node = frontier.poll();
 			state = node.getGameState();
-			
+
 			if (state.getCurrentPhase() == Phase.ATTACK) {
 				moves = new ArrayList<>(state.getPossibleAttacks());
 			} else {
 				moves = new ArrayList<>(state.getPossibleAllocations());
 			}
-			
-			if (terminalTest(state, moves))
-				return state;
-			
+
 			if (state.getCurrentPhase() == Phase.ATTACK && player == Player.PLAYER2)
 				turn++;
-			
+
 			for (Action move : moves) {
 				GameState newState = state.forcastMove(move);
 				int f = turn + heuristic.apply(newState, newState.getActivePlayer());
-				if(f >= alpha)
+				if (f >= alpha)
 					continue;
 				else {
-					if(terminalTest(newState, moves)) {
+					if (terminalTest(newState, moves)) {
 						alpha = f;
 						bestMove = new RTAnode(newState, node);
 					} else {
@@ -84,11 +80,11 @@ public class RealtimeAstarAgent extends GameAgent {
 
 		if (bestMove == null)
 			return state;
-		
-		while(bestMove.getParent() != null) {
+
+		while (bestMove.getParent() != null) {
 			bestMove = bestMove.getParent();
 		}
-		
+
 		expandedNodes++;
 		return bestMove.getGameState();
 	}
