@@ -1,39 +1,38 @@
 package risk.game.controller;
 
 import com.almasb.fxgl.app.GameApplication;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.gameplay.rpg.InGameClock;
-import com.almasb.fxgl.ui.UIController;
-import risk.game.model.agents.AggressiveAgent;
 import risk.game.model.agents.GameAgent;
-import risk.game.model.agents.PassiveAgent;
-import risk.game.model.io.InputProvider;
 import risk.game.model.state.GameState;
 import risk.game.model.state.Player;
 import risk.game.view.GameVisualizer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Collection;
 
 public class GameController extends Component {
+    private GameApplication app;
     private GameVisualizer visualizer;
     private GameState gameState;
+    private GameState initialGameState;
     private GameAgent player1;
     private GameAgent player2;
+    private Player winner;
     private int ticks = 0;
-    private static final int CLOCK = 30;
+    private static final int CLOCK = 50;
 
-    public GameController(GameApplication app, GameAgent player1, GameAgent player2) {
-        try {
-            gameState = InputProvider.getInitialGameState(new File("./in.txt"));
-            this.player1 = player1;
-            this.player2 = new AggressiveAgent(gameState.getContinents());
-            visualizer = new GameVisualizer(app, gameState);
-            visualizer.getMapEntity().addComponent(this);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    public GameController(GameApplication app, GameAgent player1, GameAgent player2, GameState initialGameState) {
+        this.initialGameState = initialGameState;
+        this.player1 = player1;
+        this.player2 = player2;
+        this.app = app;
+        init();
+    }
+
+    private void init() {
+        this.gameState = initialGameState;
+        visualizer = new GameVisualizer(app, gameState);
+        visualizer.getMapEntity().addComponent(this);
     }
 
     public Player play(Collection<GameState> history) {
@@ -62,11 +61,12 @@ public class GameController extends Component {
         }
         if (gameState.terminalTest()) {
             pause();
-//            return gameState.isWinner(Player.PLAYER1) ? Player.PLAYER1 : Player.PLAYER2;
+            winner = gameState.isWinner(Player.PLAYER1) ? Player.PLAYER1 : Player.PLAYER2;
+            showGameOver();
         }
     }
 
-    public Player play() {
+    public void play() {
         switch (gameState.getActivePlayer()) {
             case PLAYER1:
                 gameState = player1.play(gameState, Player.PLAYER1);
@@ -78,7 +78,17 @@ public class GameController extends Component {
                 break;
         }
         visualizer.visualize(gameState);
-        return null;
+    }
+
+    private void showGameOver() {
+        app.getDisplay().showConfirmationBox((winner == Player.PLAYER1 ? "Player 1" : "Player 2")
+                + " is the winner.\nPlay Again?", yes -> {
+            if (yes) {
+                app.getGameWorld().clear();
+                init();
+                resume();
+            }
+        });
     }
 
 }

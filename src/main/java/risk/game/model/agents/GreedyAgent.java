@@ -41,12 +41,10 @@ public class GreedyAgent extends GameAgent {
             return state;
         }
 
-        System.out.println(moves);
-
         Optional<GameState> possibleState = moves
                 .stream()
                 .map(state::forcastMove)
-                .max(Comparator.comparingLong(newState -> heuristic.apply(newState, player)));
+                .min(Comparator.comparingLong(newState -> heuristic.apply(newState, player)));
 
         return possibleState.orElse(state);
     }

@@ -49,9 +49,10 @@ public class AggressiveAgent extends GameAgent {
 						return country1.getNumberOfTroops() - country2.getNumberOfTroops();
 					}		
 				});
-		if(!possibleAction.isPresent())
+		if (!possibleAction.isPresent()) {
 			return state;
-		
+		}
+
 		AllocationAction bestAction = possibleAction.get();
 		System.out.println(bestAction);
 		
