@@ -50,4 +50,9 @@ public class PassiveAgent extends GameAgent {
 		return state.forecastAllocation(bestAction);
 	}
 
+	@Override
+	public void reset() {
+
+	}
+
 }

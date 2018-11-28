@@ -48,4 +48,9 @@ public class GreedyAgent extends GameAgent {
 
         return possibleState.orElse(state);
     }
+
+    @Override
+    public void reset() {
+
+    }
 }

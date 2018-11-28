@@ -46,6 +46,13 @@ public class AstarAgent extends GameAgent {
 		return expanded.pop().getGameState();
 	}
 
+	@Override
+	public void reset() {
+		expanded = null;
+		turn = 0;
+		expandedNodes = 0;
+	}
+
 	public void init(GameState state, Player player) {
 		expanded = new Stack<>();
 		PriorityQueue<AstarNode> frontier = new PriorityQueue<>(Comparator.comparingLong(AstarNode::getCost));

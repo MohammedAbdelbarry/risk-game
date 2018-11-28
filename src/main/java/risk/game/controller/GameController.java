@@ -85,6 +85,8 @@ public class GameController extends Component {
                 + " is the winner.\nPlay Again?", yes -> {
             if (yes) {
                 app.getGameWorld().clear();
+                player1.reset();
+                player2.reset();
                 init();
                 resume();
             }

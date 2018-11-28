@@ -59,6 +59,11 @@ public class AggressiveAgent extends GameAgent {
 		return state.forecastAllocation(bestAction);
 	}
 
+	@Override
+	public void reset() {
+
+	}
+
 	private GameState getAttackMove(GameState state) {
 		Collection<AttackAction> possibleAttacks = state.getPossibleAttacks();
 		if (terminalTest(state, possibleAttacks)) {

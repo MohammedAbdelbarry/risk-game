@@ -41,4 +41,9 @@ public class PacifistAgent extends GameAgent{
 		AttackAction bestAction = possibleAction.get();
 		return state.forecastAttack(bestAction);
 	}
+
+	@Override
+	public void reset() {
+
+	}
 }

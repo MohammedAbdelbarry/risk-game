@@ -97,4 +97,10 @@ public class RealtimeAstarAgent extends GameAgent {
 		return bestMove.getGameState();
 	}
 
+	@Override
+	public void reset() {
+		expandedNodes = 0;
+		turn = 0;
+	}
+
 }

@@ -8,7 +8,7 @@ import java.util.Objects;
 public class Country {
 	private int id;
 	private int numberOfTroops;
-	private Player  controllingPlayer;
+	private Player controllingPlayer;
 
 	public Country(int id, Player player, int numberOfTroops) {
 		this.id = id;

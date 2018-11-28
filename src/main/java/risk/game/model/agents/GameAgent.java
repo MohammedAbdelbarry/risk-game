@@ -13,4 +13,6 @@ public abstract class GameAgent {
 		return state.terminalTest() || actions.isEmpty();
 	}
 
+	public abstract void reset();
+
 }
