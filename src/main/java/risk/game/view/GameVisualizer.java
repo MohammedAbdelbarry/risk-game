@@ -3,6 +3,7 @@ package risk.game.view;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -33,7 +34,6 @@ public class GameVisualizer {
     public GameVisualizer(GameApplication gameApp, GameState initialGameState) {
         this.gameApp = gameApp;
         map = copyToUndirected(initialGameState.getWorldMap());
-//        Graphs.clone(initialGameState.getWorldMap())
         init(initialGameState);
     }
 
@@ -78,6 +78,10 @@ public class GameVisualizer {
         FxDefaultView view = (FxDefaultView) viewer.addView(FxViewer.DEFAULT_VIEW_ID, renderer);
         view.setPrefHeight(gameApp.getHeight());
         view.setPrefWidth(gameApp.getWidth());
+        Image mapImage = new Image("map.jpg");
+
+        view.setBackLayerRenderer((graphicsContext, graphicGraph, v, i, i1, v1, v2, v3, v4)
+                -> graphicsContext.drawImage(mapImage, v1, v2, i, i1));
 
         mapEntity = Entities.builder().viewFromNode(view).buildAndAttach(gameApp.getGameWorld());
 
@@ -89,9 +93,9 @@ public class GameVisualizer {
 
         player1Text.setFill(Color.BLUE);
         player2Text.setFill(Color.RED);
-        player1Text.setStrokeWidth(0.5);
+        player1Text.setStrokeWidth(0.2);
         player1Text.setStroke(Color.WHITE);
-        player2Text.setStrokeWidth(0.5);
+        player2Text.setStrokeWidth(0.2);
         player2Text.setStroke(Color.WHITE);
         player1Text.setFont(Font.font(player1Text.getFont().getFamily(), FontWeight.BOLD, player1Text.getFont().getSize()));
         player2Text.setFont(Font.font(player2Text.getFont().getFamily(), FontWeight.BOLD, player2Text.getFont().getSize()));
@@ -103,7 +107,7 @@ public class GameVisualizer {
         int midPoint = gameApp.getWidth() / 2;
         turn = new Text( midPoint - 100, 50, turnStr);
         turn.setFont(Font.font(turn.getFont().getFamily(), FontWeight.BOLD, turn.getFont().getSize()));
-        turn.setStrokeWidth(0.5);
+        turn.setStrokeWidth(0.2);
         turn.setStroke(Color.WHITE);
 
         Entities.builder().viewFromNode(player1Text).buildAndAttach(gameApp.getGameWorld());
