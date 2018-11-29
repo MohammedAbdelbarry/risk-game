@@ -6,8 +6,10 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.Stack;
 import java.util.function.BiFunction;
 
+import risk.game.model.state.AstarNode;
 import risk.game.model.state.GameState;
 import risk.game.model.state.Phase;
 import risk.game.model.state.Player;
@@ -19,6 +21,7 @@ public class RealtimeAstarAgent extends GameAgent {
 	private BiFunction<GameState, Player, Long> heuristic;
 	private int turn;
 	private int expandedNodes;
+	private final int LIMIT = 5;
 
 	public RealtimeAstarAgent(BiFunction<GameState, Player, Long> heuristic) {
 		this.heuristic = heuristic;
@@ -38,10 +41,10 @@ public class RealtimeAstarAgent extends GameAgent {
 
 		Set<RTAnode> visited = new HashSet<>();
 
-		PriorityQueue<RTAnode> frontier = new PriorityQueue<>(Comparator
-				.comparingLong(o -> heuristic.apply(o.getGameState(), o.getGameState().getActivePlayer())));
+		PriorityQueue<RTAnode> frontier = new PriorityQueue<>(
+				Comparator.comparingLong(o -> heuristic.apply(o.getGameState(), o.getGameState().getActivePlayer())));
 
-		RTAnode node = new RTAnode(state, null);
+		RTAnode node = new RTAnode(state, null, 0);
 		frontier.add(node);
 		long alpha = Integer.MAX_VALUE;
 		Collection<Action> moves;
@@ -50,10 +53,9 @@ public class RealtimeAstarAgent extends GameAgent {
 		while (!frontier.isEmpty()) {
 			node = frontier.poll();
 			state = node.getGameState();
-
 			visited.add(node);
 
-			if (state.isWinner(player)) {
+			if (state.isWinner(player) || node.getDepth() == LIMIT) {
 				bestMove = node;
 				break;
 			} else if (state.isLoser(player)) {
@@ -71,12 +73,16 @@ public class RealtimeAstarAgent extends GameAgent {
 
 			for (Action move : moves) {
 				GameState newState = state.forcastMove(move);
+				if (state.getCurrentPhase() == Phase.ATTACK) {
+					PassiveAgent agent = new PassiveAgent();
+					newState = agent.play(agent.play(newState, newState.getActivePlayer()), newState.getActivePlayer());
+				}
 				long f = turn + heuristic.apply(newState, newState.getActivePlayer());
-
-				RTAnode newNode = new RTAnode(newState, node);
+				int depth = node.getDepth() + 1;
+				RTAnode newNode = new RTAnode(newState, node, depth);
 
 				if (f < alpha && !visited.contains(newNode)) {
-					if (newState.isWinner(player)) {
+					if (newState.isWinner(player) || newNode.getDepth() == LIMIT) {
 						alpha = f;
 						bestMove = newNode;
 					} else {
@@ -85,11 +91,10 @@ public class RealtimeAstarAgent extends GameAgent {
 				}
 			}
 		}
-
 		if (bestMove == null)
 			return state;
 
-		while (bestMove.getParent() != null) {
+		while (bestMove.getParent().getParent() != null) {
 			bestMove = bestMove.getParent();
 		}
 

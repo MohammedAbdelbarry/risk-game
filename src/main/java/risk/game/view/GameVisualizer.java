@@ -80,12 +80,12 @@ public class GameVisualizer {
         view.setPrefWidth(gameApp.getWidth());
         Image mapImage = new Image("map.jpg");
 
-        view.setBackLayerRenderer((graphicsContext, graphicGraph, v, i, i1, v1, v2, v3, v4)
-                -> {
-                        if (graphicsContext != null) {
-                            graphicsContext.drawImage(mapImage, v1, v2, i, i1);
-                        }
-        });
+//        view.setBackLayerRenderer((graphicsContext, graphicGraph, v, i, i1, v1, v2, v3, v4)
+//                -> {
+//                        if (graphicsContext != null) {
+//                            graphicsContext.drawImage(mapImage, v1, v2, i, i1);
+//                        }
+//        });
 
         mapEntity = Entities.builder().viewFromNode(view).buildAndAttach(gameApp.getGameWorld());
 

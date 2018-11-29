@@ -6,9 +6,11 @@ public class RTAnode {
 
 	private GameState gameState;
 	private RTAnode parent;
+	private int depth;
 	
-	public RTAnode(GameState gameState, RTAnode parent) {
+	public RTAnode(GameState gameState, RTAnode parent, int depth) {
 		this.gameState = gameState;
+		this.depth = depth;
 		this.parent = parent;
 	}
 	
@@ -18,6 +20,10 @@ public class RTAnode {
 	
 	public GameState getGameState(){
 		return gameState;
+	}
+	
+	public int getDepth() {
+		return depth;
 	}
 
 	@Override
