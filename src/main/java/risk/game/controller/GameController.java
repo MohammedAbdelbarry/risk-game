@@ -1,7 +1,7 @@
 package risk.game.controller;
 
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import risk.game.model.agents.GameAgent;
 import risk.game.model.state.GameState;
@@ -19,7 +19,7 @@ public class GameController extends Component {
     private GameAgent player2;
     private Player winner;
     private int ticks = 0;
-    private static final int CLOCK = 50;
+    private static final int CLOCK = 100;
 
     public GameController(GameApplication app, GameAgent player1, GameAgent player2, GameState initialGameState) {
         this.initialGameState = initialGameState;
@@ -41,11 +41,6 @@ public class GameController extends Component {
             if (gameState.terminalTest()) {
                 return gameState.isWinner(Player.PLAYER1) ? Player.PLAYER1 : Player.PLAYER2;
             }
-//            try {
-//                wait(30);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
         }
 
         return null;
@@ -55,6 +50,7 @@ public class GameController extends Component {
     public void onUpdate(double tpf) {
         super.onUpdate(tpf);
         ticks++;
+
         if (ticks == CLOCK) {
             ticks = 0;
             play();
@@ -66,7 +62,7 @@ public class GameController extends Component {
         }
     }
 
-    public void play() {
+    private void play() {
         switch (gameState.getActivePlayer()) {
             case PLAYER1:
                 gameState = player1.play(gameState, Player.PLAYER1);
@@ -89,6 +85,8 @@ public class GameController extends Component {
                 player2.reset();
                 init();
                 resume();
+            } else {
+                FXGL.exit();
             }
         });
     }

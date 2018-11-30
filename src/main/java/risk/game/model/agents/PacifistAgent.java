@@ -11,6 +11,8 @@ import risk.game.model.state.action.AttackAction;
 
 public class PacifistAgent extends GameAgent{
 
+	public static final String KEY = "Pacifist";
+
 	@Override
 	public GameState play(GameState state, Player player) {
 		if (state.getActivePlayer() != player) {
