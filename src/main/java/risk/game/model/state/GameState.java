@@ -172,6 +172,22 @@ public class GameState {
 		return 0;
 	}
 
+	public Country getCountry(String nodeId) {
+		Node node = worldMap.getNode(nodeId);
+		if (node == null) {
+			return null;
+		}
+		return node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
+	}
+
+	public Player getControllingPlayer(String nodeId) {
+		Country country = getCountry(nodeId);
+		if (country == null) {
+			return null;
+		}
+		return country.getControllingPlayer();
+	}
+
 	private int calculateTroopsPerTurn(Player player) {
 		PlayerState state = getPlayerState(player);
 		int troopsPerTurn = NUM_TROOPS;

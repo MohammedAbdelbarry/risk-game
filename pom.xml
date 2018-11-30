@@ -91,7 +91,7 @@
         <!-- https://mvnrepository.com/artifact/com.github.almasb/fxgl -->
         <dependency>
             <groupId>com.github.almasb</groupId>
-            <artifactId>fxgl</artifactId>
+            <artifactId>fxgl-base</artifactId>
             <version>0.5.4</version>
         </dependency>
 
