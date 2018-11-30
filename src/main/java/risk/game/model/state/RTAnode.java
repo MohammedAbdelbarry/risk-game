@@ -7,11 +7,17 @@ public class RTAnode {
 	private GameState gameState;
 	private RTAnode parent;
 	private int depth;
+	private long cost;
 	
-	public RTAnode(GameState gameState, RTAnode parent, int depth) {
+	public RTAnode(GameState gameState, RTAnode parent, int depth, long cost) {
 		this.gameState = gameState;
 		this.depth = depth;
 		this.parent = parent;
+		this.cost = cost;
+	}
+	
+	public long getCost() {
+		return cost;
 	}
 	
 	public RTAnode getParent() {

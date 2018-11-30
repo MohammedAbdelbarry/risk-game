@@ -39,7 +39,7 @@ public class Main extends GameApplication {
 		try {
 			GameState initialGameState = InputProvider.getInitialGameState(new File("./in.txt"));
 			GameController controller = new GameController(this, new PassiveAgent(),
-					new RealtimeAstarAgent((state, player) -> {
+					new AstarAgent((state, player) -> {
 						if (state.isWinner(player)) {
 							return Long.MIN_VALUE;
 						} else if (state.isLoser(player)) {

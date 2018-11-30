@@ -14,6 +14,7 @@ import risk.game.model.state.GameState;
 import risk.game.model.state.Phase;
 import risk.game.model.state.Player;
 import risk.game.model.state.action.Action;
+import risk.game.model.state.action.AttackAction;
 
 public class AstarAgent extends GameAgent {
 
@@ -66,6 +67,7 @@ public class AstarAgent extends GameAgent {
 			node = frontier.poll();
 			visited.add(node);
 			state = node.getGameState();
+			expandedNodes++;
 
 			if (state.isWinner(player)) {
 				terminalState = node;
@@ -86,11 +88,20 @@ public class AstarAgent extends GameAgent {
 
 			for (Action move : moves) {
 				GameState newState = state.forcastMove(move);
+				long f = Long.MAX_VALUE;
 				if (state.getCurrentPhase() == Phase.ATTACK) {
 					PassiveAgent agent = new PassiveAgent();
 					newState = agent.play(agent.play(newState, newState.getActivePlayer()), newState.getActivePlayer());
+					f = turn + heuristic.apply(newState, newState.getActivePlayer());
+				} else {
+					Collection<AttackAction> attacks = newState.getPossibleAttacks();
+					for (AttackAction a : attacks) {
+						GameState attackState = newState.forecastAttack(a);
+						long newf = turn + heuristic.apply(attackState, attackState.getActivePlayer());
+						if (f > newf)
+							f = newf;
+					}
 				}
-				long f = turn + heuristic.apply(newState, newState.getActivePlayer());
 				AstarNode n = new AstarNode(newState, f, node);
 				if (!visited.contains(n)) {
 					frontier.add(n);
@@ -104,6 +115,10 @@ public class AstarAgent extends GameAgent {
 		}
 
 		expanded.push(terminalState);
+	}
+	
+	public long calculatePerformance(int f) {
+		return f * turn + expandedNodes;
 	}
 
 }

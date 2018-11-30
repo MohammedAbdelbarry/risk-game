@@ -84,6 +84,7 @@ public class GameController extends Component {
         app.getDisplay().showConfirmationBox((winner == Player.PLAYER1 ? "Player 1" : "Player 2")
                 + " is the winner.\nPlay Again?", yes -> {
             if (yes) {
+            	
                 app.getGameWorld().clear();
                 player1.reset();
                 player2.reset();
