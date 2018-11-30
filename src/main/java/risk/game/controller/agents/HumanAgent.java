@@ -41,4 +41,9 @@ public class HumanAgent extends GameAgent {
     public void reset() {
 
     }
+
+	@Override
+	public long calculatePerformance(int f) {
+		return 0;
+	}
 }

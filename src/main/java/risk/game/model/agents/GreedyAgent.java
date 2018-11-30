@@ -37,6 +37,10 @@ public class GreedyAgent extends GameAgent {
 
         System.out.println(state.getActivePlayer() + ":" + state.getCurrentPhase());
 
+        if (state.getCurrentPhase() == Phase.ATTACK && player == Player.PLAYER2) {
+			turn++;
+		}
+        
         if (state.getCurrentPhase() == Phase.ALLOCATE) {
             Collection<Action> moves = new ArrayList<>(state.getPossibleAllocations());
             if (terminalTest(state, moves)) {
