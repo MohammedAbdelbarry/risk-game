@@ -10,9 +10,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class GreedyAgent extends GameAgent {
     private BiFunction<GameState, Player, Long> heuristic;
+
+    public static final String KEY = "Greedy";
 
     public GreedyAgent(BiFunction<GameState, Player, Long> heuristic) {
         this.heuristic = heuristic;
@@ -30,13 +33,23 @@ public class GreedyAgent extends GameAgent {
 
         System.out.println(state.getActivePlayer() + ":" + state.getCurrentPhase());
 
-        Collection<Action> moves;
-        if (state.getCurrentPhase() == Phase.ATTACK) {
-            moves = new ArrayList<>(state.getPossibleAttacks());
-        } else {
-            moves = new ArrayList<>(state.getPossibleAllocations());
+        if (state.getCurrentPhase() == Phase.ALLOCATE) {
+            Collection<Action> moves = new ArrayList<>(state.getPossibleAllocations());
+            if (terminalTest(state, moves)) {
+                return state;
+            }
+            Optional<GameState> bestAlloc = moves.stream()
+                    .map(state::forcastMove)
+                    .min(Comparator.comparingLong(allocState -> allocState.getPossibleAttacks()
+                            .stream()
+                            .map(allocState::forcastMove)
+                            .map(newState -> heuristic.apply(newState, player))
+                            .min(Long::compareTo)
+                            .orElse(Long.MAX_VALUE)));
+            return bestAlloc.orElse(state);
         }
 
+        Collection<Action> moves = new ArrayList<>(state.getPossibleAttacks());
         if (terminalTest(state, moves)) {
             return state;
         }

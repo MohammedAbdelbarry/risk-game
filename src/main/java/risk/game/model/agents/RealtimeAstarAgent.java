@@ -21,7 +21,9 @@ public class RealtimeAstarAgent extends GameAgent {
 	private BiFunction<GameState, Player, Long> heuristic;
 	private int turn;
 	private int expandedNodes;
-	private final int LIMIT = 5;
+	private final int LIMIT = 10;
+
+	public static final String KEY = "Real-time A*";
 
 	public RealtimeAstarAgent(BiFunction<GameState, Player, Long> heuristic) {
 		this.heuristic = heuristic;
