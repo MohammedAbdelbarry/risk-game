@@ -1,8 +1,8 @@
 package risk.game.controller;
 
-import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.component.Component;
+
 import risk.game.model.agents.GameAgent;
 import risk.game.model.state.GameState;
 import risk.game.model.state.Player;
@@ -21,19 +21,19 @@ public class GameController extends Component {
     private int ticks = 0;
     private static final int CLOCK = 75;
 
-    public GameController(GameApplication app, GameAgent player1, GameAgent player2, GameState initialGameState) {
-        this.initialGameState = initialGameState;
-        this.player1 = player1;
-        this.player2 = player2;
-        this.app = app;
-        init();
-    }
+	public GameController(GameApplication app, GameAgent player1, GameAgent player2, GameState initialGameState) {
+		this.initialGameState = initialGameState;
+		this.player1 = player1;
+		this.player2 = player2;
+		this.app = app;
+		init();
+	}
 
-    private void init() {
-        this.gameState = initialGameState;
-        visualizer = new GameVisualizer(app, gameState);
-        visualizer.getMapEntity().addComponent(this);
-    }
+	private void init() {
+		this.gameState = initialGameState;
+		visualizer = new GameVisualizer(app, gameState);
+		visualizer.getMapEntity().addComponent(this);
+	}
 
     public Player play(Collection<GameState> history) {
         for (GameState state : history) {
@@ -42,54 +42,61 @@ public class GameController extends Component {
                 return gameState.isWinner(Player.PLAYER1) ? Player.PLAYER1 : Player.PLAYER2;
             }
         }
+		return null;
+	}
 
-        return null;
-    }
+	@Override
+	public void onUpdate(double tpf) {
+		super.onUpdate(tpf);
+		ticks++;
+		if (ticks == CLOCK) {
+			ticks = 0;
+			play();
+		}
+		if (gameState.terminalTest()) {
+			pause();
+			winner = gameState.isWinner(Player.PLAYER1) ? Player.PLAYER1 : Player.PLAYER2;
+			showGameOver();
+		}
+	}
 
-    @Override
-    public void onUpdate(double tpf) {
-        super.onUpdate(tpf);
-        ticks++;
+	public void play() {
+		switch (gameState.getActivePlayer()) {
+		case PLAYER1:
+			gameState = player1.play(gameState, Player.PLAYER1);
+			break;
+		case PLAYER2:
+			gameState = player2.play(gameState, Player.PLAYER2);
+			break;
+		default:
+			break;
+		}
+		visualizer.visualize(gameState);
+	}
 
-        if (ticks == CLOCK) {
-            ticks = 0;
-            play();
-        }
-        if (gameState.terminalTest()) {
-            pause();
-            winner = gameState.isWinner(Player.PLAYER1) ? Player.PLAYER1 : Player.PLAYER2;
-            showGameOver();
-        }
-    }
-
-    private void play() {
-        switch (gameState.getActivePlayer()) {
-            case PLAYER1:
-                gameState = player1.play(gameState, Player.PLAYER1);
-                break;
-            case PLAYER2:
-                gameState = player2.play(gameState, Player.PLAYER2);
-                break;
-            default:
-                break;
-        }
-        visualizer.visualize(gameState);
-    }
-
-    private void showGameOver() {
-        app.getDisplay().showConfirmationBox((winner == Player.PLAYER1 ? "Player 1" : "Player 2")
-                + " is the winner.\nPlay Again?", yes -> {
-            if (yes) {
-            	
-                app.getGameWorld().clear();
-                player1.reset();
-                player2.reset();
-                init();
-                resume();
-            } else {
-                FXGL.exit();
-            }
-        });
-    }
+	private void showGameOver() {
+		calculateAgentsPerformance();
+		app.getDisplay().showConfirmationBox(
+				(winner == Player.PLAYER1 ? "Player 1" : "Player 2") + " is the winner.\nPlay Again?", yes -> {
+					if (yes) {
+						app.getGameWorld().clear();
+						player1.reset();
+						player2.reset();
+						init();
+						resume();
+					}
+				});
+	}
+	
+	private void calculateAgentsPerformance() {
+		int[] fValues = { 1, 100, 10000 };
+		for (int f : fValues) {
+			long perf = player2.calculatePerformance(f);
+			if (perf != 0) {
+				System.out.println("For f = "+ f);
+				System.out.println("Perfomance: " + perf);
+			}
+		}
+	}
 
 }

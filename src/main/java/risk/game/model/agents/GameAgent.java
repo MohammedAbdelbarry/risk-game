@@ -14,5 +14,6 @@ public abstract class GameAgent {
 	}
 
 	public abstract void reset();
+	public abstract long calculatePerformance(int f);
 
 }

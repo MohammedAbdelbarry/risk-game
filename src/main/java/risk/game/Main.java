@@ -48,7 +48,6 @@ public class Main extends GameApplication {
 		super.initGame();
 		try {
 			GameState initialGameState = InputProvider.getInitialGameState(new File("./in.txt"));
-
 			RiskConfig config = getGameConfig();
 			BiFunction<GameState, Player, Long> heuristic = (state, player) -> {
 				if (state.isWinner(player)) {
@@ -65,6 +64,7 @@ public class Main extends GameApplication {
 			GameAgent player1 = AgentFactory.getInstance().newAgent(config.getPlayer1Agent(), initialGameState, heuristic);
 			GameAgent player2 = AgentFactory.getInstance().newAgent(config.getPlayer2Agent(), initialGameState, heuristic);
 			GameController controller = new GameController(this, player1, player2, initialGameState);
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
