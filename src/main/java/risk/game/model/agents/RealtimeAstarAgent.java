@@ -25,8 +25,6 @@ public class RealtimeAstarAgent extends GameAgent {
 
 	public static final String KEY = "Real-time A*";
 
-	public static final String KEY = "Real-time A*";
-
 	public RealtimeAstarAgent(BiFunction<GameState, Player, Long> heuristic) {
 		this.heuristic = heuristic;
 		turn = 0;
