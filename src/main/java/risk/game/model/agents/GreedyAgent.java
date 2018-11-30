@@ -33,17 +33,23 @@ public class GreedyAgent extends GameAgent {
 
         System.out.println(state.getActivePlayer() + ":" + state.getCurrentPhase());
 
-        Collection<Action> moves;
-        if (state.getCurrentPhase() == Phase.ATTACK) {
-            moves = new ArrayList<>(state.getPossibleAttacks());
-        } else {
-            moves = new ArrayList<>(state.getPossibleAllocations());
-            moves = moves.stream()
+        if (state.getCurrentPhase() == Phase.ALLOCATE) {
+            Collection<Action> moves = new ArrayList<>(state.getPossibleAllocations());
+            if (terminalTest(state, moves)) {
+                return state;
+            }
+            Optional<GameState> bestAlloc = moves.stream()
                     .map(state::forcastMove)
-                    .flatMap(nextState -> nextState.getPossibleAttacks().stream())
-                    .collect(Collectors.toList());
+                    .min(Comparator.comparingLong(allocState -> allocState.getPossibleAttacks()
+                            .stream()
+                            .map(allocState::forcastMove)
+                            .map(newState -> heuristic.apply(newState, player))
+                            .min(Long::compareTo)
+                            .orElse(Long.MAX_VALUE)));
+            return bestAlloc.orElse(state);
         }
 
+        Collection<Action> moves = new ArrayList<>(state.getPossibleAttacks());
         if (terminalTest(state, moves)) {
             return state;
         }
