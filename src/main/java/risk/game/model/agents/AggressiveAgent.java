@@ -21,6 +21,8 @@ public class AggressiveAgent extends GameAgent {
 
 	private Collection<Continent> continents;
 
+    public static final String KEY = "Aggressive";
+
 	public AggressiveAgent(Collection<Continent> continents) {
 		this.continents = continents;
 	}

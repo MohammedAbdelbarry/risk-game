@@ -22,6 +22,8 @@ public class AstarAgent extends GameAgent {
 	private int turn;
 	private int expandedNodes;
 
+	public static final String KEY = "A*";
+
 	public AstarAgent(BiFunction<GameState, Player, Long> heuristic) {
 		this.heuristic = heuristic;
 		turn = 0;

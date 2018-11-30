@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public class PassiveAgent extends GameAgent {
 
+	public static final String KEY = "Passive";
+
 	@Override
 	public GameState play(GameState state, Player player) {
 

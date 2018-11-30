@@ -10,9 +10,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class GreedyAgent extends GameAgent {
     private BiFunction<GameState, Player, Long> heuristic;
+
+    public static final String KEY = "Greedy";
 
     public GreedyAgent(BiFunction<GameState, Player, Long> heuristic) {
         this.heuristic = heuristic;
@@ -35,6 +38,10 @@ public class GreedyAgent extends GameAgent {
             moves = new ArrayList<>(state.getPossibleAttacks());
         } else {
             moves = new ArrayList<>(state.getPossibleAllocations());
+            moves = moves.stream()
+                    .map(state::forcastMove)
+                    .flatMap(nextState -> nextState.getPossibleAttacks().stream())
+                    .collect(Collectors.toList());
         }
 
         if (terminalTest(state, moves)) {
