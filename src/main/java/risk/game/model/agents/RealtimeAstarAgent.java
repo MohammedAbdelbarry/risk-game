@@ -61,6 +61,11 @@ public class RealtimeAstarAgent extends GameAgent {
 				continue;
 			}
 
+			if (state.getActivePlayer() == player.getOpponent() && state.getCurrentPhase() == Phase.ALLOCATE) {
+				PassiveAgent agent = new PassiveAgent();
+				state = agent.play(agent.play(state, state.getActivePlayer()), state.getActivePlayer());
+			}
+
 			if (state.getCurrentPhase() == Phase.ATTACK) {
 				moves = new ArrayList<>(state.getPossibleAttacks());
 			} else {
@@ -74,8 +79,6 @@ public class RealtimeAstarAgent extends GameAgent {
 				GameState newState = state.forcastMove(move);
 				long f = Long.MAX_VALUE;
 				if (state.getCurrentPhase() == Phase.ATTACK) {
-					PassiveAgent agent = new PassiveAgent();
-					newState = agent.play(agent.play(newState, newState.getActivePlayer()), newState.getActivePlayer());
 					f = turn + heuristic.apply(newState, newState.getActivePlayer());
 				} else {
 					Collection<AttackAction> attacks = newState.getPossibleAttacks();
