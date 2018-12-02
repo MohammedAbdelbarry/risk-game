@@ -68,8 +68,8 @@ public class AstarAgent extends GameAgent {
 		while (!frontier.isEmpty()) {
 			node = frontier.poll();
 			visited.add(node);
-			state = node.getGameState();
 			expandedNodes++;
+			state = node.getGameState();
 
 			if (state.isWinner(player)) {
 				terminalState = node;
@@ -121,7 +121,7 @@ public class AstarAgent extends GameAgent {
 
 		expanded.push(terminalState);
 	}
-	
+
 	public long calculatePerformance(int f) {
 		return f * turn + expandedNodes;
 	}

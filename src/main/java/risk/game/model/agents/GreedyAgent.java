@@ -14,11 +14,15 @@ import java.util.stream.Collectors;
 
 public class GreedyAgent extends GameAgent {
     private BiFunction<GameState, Player, Long> heuristic;
+    private int turn;
+    private int expandedNodes;
 
     public static final String KEY = "Greedy";
 
     public GreedyAgent(BiFunction<GameState, Player, Long> heuristic) {
         this.heuristic = heuristic;
+        turn = 0;
+        expandedNodes = 0;
     }
 
     public GreedyAgent() {
@@ -33,6 +37,10 @@ public class GreedyAgent extends GameAgent {
 
         System.out.println(state.getActivePlayer() + ":" + state.getCurrentPhase());
 
+        if (state.getCurrentPhase() == Phase.ATTACK && player == Player.PLAYER2) {
+			turn++;
+		}
+        
         if (state.getCurrentPhase() == Phase.ALLOCATE) {
             Collection<Action> moves = new ArrayList<>(state.getPossibleAllocations());
             if (terminalTest(state, moves)) {
@@ -59,11 +67,17 @@ public class GreedyAgent extends GameAgent {
                 .map(state::forcastMove)
                 .min(Comparator.comparingLong(newState -> heuristic.apply(newState, player)));
 
+        expandedNodes++;
         return possibleState.orElse(state);
     }
 
+    public long calculatePerformance(int f) {
+		return f * turn + expandedNodes;
+	}
+    
     @Override
     public void reset() {
-
+    	turn = 0;
+    	expandedNodes = 0;
     }
 }
