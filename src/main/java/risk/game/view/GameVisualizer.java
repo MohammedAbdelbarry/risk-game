@@ -3,11 +3,9 @@ package risk.game.view;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.scene.menu.FXGLDefaultMenu;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.Graph;
@@ -15,8 +13,6 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.ui.fx_viewer.FxDefaultView;
 import org.graphstream.ui.fx_viewer.FxViewer;
-import org.graphstream.ui.javafx.FxGraphRenderer;
-import org.graphstream.ui.view.GraphRenderer;
 import org.graphstream.ui.view.Viewer;
 import risk.game.model.state.Country;
 import risk.game.model.state.GameState;
@@ -74,19 +70,14 @@ public class GameVisualizer {
         viewer.enableAutoLayout();
         viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.EXIT);
 
-        GraphRenderer renderer = new FxGraphRenderer();
-        FxDefaultView view = (FxDefaultView) viewer.addView(FxViewer.DEFAULT_VIEW_ID, renderer);
+        FxDefaultView view = (FxDefaultView) viewer.addDefaultView(false);
         view.setPrefHeight(gameApp.getHeight());
         view.setPrefWidth(gameApp.getWidth());
 
         Image mapImage = new Image("map.jpg");
 
-        view.setBackLayerRenderer((graphicsContext, graphicGraph, v, i, i1, v1, v2, v3, v4)
-                -> {
-                        if (graphicsContext != null) {
-                            graphicsContext.drawImage(mapImage, v1, v2, i, i1);
-                        }
-        });
+        Platform.runLater(() -> view.setBackLayerRenderer((graphicsContext, graphicGraph, v, i, i1, v1, v2, v3, v4)
+                -> graphicsContext.drawImage(mapImage, v1, v2, i, i1)));
 
         mapEntity = Entities.builder().viewFromNode(view).buildAndAttach(gameApp.getGameWorld());
 
