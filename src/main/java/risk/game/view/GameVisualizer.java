@@ -14,6 +14,9 @@ import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.ui.fx_viewer.FxDefaultView;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.view.Viewer;
+import org.graphstream.ui.view.ViewerListener;
+import org.graphstream.ui.view.ViewerPipe;
+import risk.game.model.agents.PassiveAgent;
 import risk.game.model.state.Country;
 import risk.game.model.state.GameState;
 import risk.game.model.state.Player;
@@ -27,6 +30,7 @@ public class GameVisualizer {
     private Text player1Text;
     private Text player2Text;
     private Text turn;
+    private ViewerPipe viewerPipe;
 
     public GameVisualizer(GameApplication gameApp, GameState initialGameState) {
         this.gameApp = gameApp;
@@ -74,6 +78,8 @@ public class GameVisualizer {
         view.setPrefHeight(gameApp.getHeight());
         view.setPrefWidth(gameApp.getWidth());
 
+        viewerPipe = viewer.newViewerPipe();
+
         Image mapImage = new Image("map.jpg");
 
         Platform.runLater(() -> view.setBackLayerRenderer((graphicsContext, graphicGraph, v, i, i1, v1, v2, v3, v4)
@@ -117,5 +123,9 @@ public class GameVisualizer {
 
     public Entity getMapEntity() {
         return mapEntity;
+    }
+
+    public ViewerPipe getViewerPipe() {
+        return viewerPipe;
     }
 }

@@ -61,8 +61,8 @@ public class Main extends GameApplication {
 						map(Country::getControllingPlayer).filter(p -> p == player.getOpponent()).count();
 
 			};
-			GameAgent player1 = AgentFactory.getInstance().newAgent(config.getPlayer1Agent(), initialGameState, heuristic);
-			GameAgent player2 = AgentFactory.getInstance().newAgent(config.getPlayer2Agent(), initialGameState, heuristic);
+			GameAgent player1 = AgentFactory.getInstance().newAgent(config.getPlayer1Agent(), initialGameState, heuristic, this);
+			GameAgent player2 = AgentFactory.getInstance().newAgent(config.getPlayer2Agent(), initialGameState, heuristic, this);
 			GameController controller = new GameController(this, player1, player2, initialGameState);
 
 		} catch (FileNotFoundException e) {

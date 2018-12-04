@@ -1,5 +1,7 @@
 package risk.game.model.agents.util;
 
+import com.almasb.fxgl.app.GameApplication;
+import risk.game.controller.agents.HumanAgent;
 import risk.game.model.agents.AggressiveAgent;
 import risk.game.model.agents.AstarAgent;
 import risk.game.model.agents.GameAgent;
@@ -18,7 +20,7 @@ public class AgentFactory {
 
     }
 
-    public GameAgent newAgent(String key, GameState initialGameState, BiFunction<GameState, Player, Long> heuristic) {
+    public GameAgent newAgent(String key, GameState initialGameState, BiFunction<GameState, Player, Long> heuristic, GameApplication gameApp) {
         switch (key) {
             case PassiveAgent.KEY:
                 return new PassiveAgent();
@@ -33,7 +35,7 @@ public class AgentFactory {
             case RealtimeAstarAgent.KEY:
                 return new RealtimeAstarAgent(heuristic);
             case "Human":
-                System.out.println("Need to implement human");
+                return new HumanAgent(gameApp);
             default:
                 throw new IllegalArgumentException("Agent: " + key + " is not a valid agent");
         }
