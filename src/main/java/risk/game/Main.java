@@ -33,8 +33,8 @@ public class Main extends GameApplication {
 	protected void initSettings(GameSettings gameSettings) {
 		gameSettings.setFullScreenAllowed(true);
 		gameSettings.setManualResizeEnabled(true);
-		gameSettings.setHeight(720);
-		gameSettings.setWidth(1280);
+		gameSettings.setHeight(711);
+		gameSettings.setWidth(1264);
 		gameSettings.setTitle("Risk");
 		gameSettings.setVersion("1.0");
 		gameSettings.setAppIcon("Risk-Icon.png");

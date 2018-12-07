@@ -7,7 +7,6 @@ import risk.game.model.state.Player;
 import java.util.Collection;
 
 public abstract class GameAgent implements ViewerListener {
-
 	public abstract GameState play(GameState state, Player player);
 
 	public boolean terminalTest(GameState state, Collection<?> actions) {
@@ -29,7 +28,7 @@ public abstract class GameAgent implements ViewerListener {
 
 	@Override
 	public void buttonReleased(String s) {
-		System.out.println("CLICKED NODE: " + s);
+
 	}
 
 	@Override

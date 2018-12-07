@@ -1,12 +1,18 @@
 package risk.game.controller;
 
+import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.component.Component;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import org.graphstream.ui.view.ViewerPipe;
+import risk.game.controller.agents.HumanAgent;
 import risk.game.model.agents.GameAgent;
 import risk.game.model.state.GameState;
+import risk.game.model.state.Phase;
 import risk.game.model.state.Player;
+import risk.game.model.state.action.AttackAction;
 import risk.game.view.GameVisualizer;
 
 import java.util.Collection;
@@ -22,32 +28,62 @@ public class GameController extends Component {
     private Player winner;
     private int ticks = 0;
     private static final int CLOCK = 75;
+    private int player1Clock;
+    private int player2Clock;
 
 	public GameController(GameApplication app, GameAgent player1, GameAgent player2, GameState initialGameState) {
 		this.initialGameState = initialGameState;
 		this.player1 = player1;
 		this.player2 = player2;
 		this.app = app;
+		if (player1 instanceof HumanAgent) {
+			player1Clock = 1;
+		} else {
+			player1Clock = CLOCK;
+		}
+		if (player2 instanceof HumanAgent) {
+			player2Clock = 1;
+		} else {
+			player2Clock = CLOCK;
+		}
 		init();
 	}
 
 	private void init() {
 		this.gameState = initialGameState;
 		visualizer = new GameVisualizer(app, gameState);
+		visualizer.getCancelButton().setOnAction(event -> {
+			resetActivePlayer();
+			gameState.getWorldMap().nodes().forEach(node -> {
+				node.removeAttribute("ui.color");
+				node.removeAttribute("ui.hide");
+			});
+		});
+		visualizer.getSkipButton().setOnAction(event -> {
+			GameAgent activePlayer = getActivePlayer();
+			if (activePlayer instanceof HumanAgent) {
+				HumanAgent humanAgent = (HumanAgent) activePlayer;
+				humanAgent.skipAttack();
+			}
+		});
 		visualizer.getMapEntity().addComponent(this);
 		ViewerPipe viewerPipe = visualizer.getViewerPipe();
 		pumpThread = new Thread(() -> {
 			while (true) {
 				try {
 					viewerPipe.blockingPump();
-				} catch (InterruptedException ignored) {
-
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		});
 
 		pumpThread.setDaemon(true);
 		pumpThread.start();
+	}
+
+	private void resetActivePlayer() {
+		getActivePlayer().reset();
 	}
 
     public Player play(Collection<GameState> history) {
@@ -60,11 +96,39 @@ public class GameController extends Component {
 		return null;
 	}
 
+	private GameAgent getActivePlayer() {
+		if (gameState.getActivePlayer() == Player.PLAYER1) {
+			return player1;
+		}
+		return player2;
+	}
+
+	private GameAgent getInactivePlayer() {
+		if (gameState.getActivePlayer() == Player.PLAYER1) {
+			return player2;
+		}
+		return player1;
+	}
+
+	private int getActivePlayerClock() {
+		if (gameState.getActivePlayer() == Player.PLAYER1) {
+			return player1Clock;
+		}
+		return player2Clock;
+	}
+
 	@Override
 	public void onUpdate(double tpf) {
 		super.onUpdate(tpf);
 		ticks++;
-		if (ticks == CLOCK) {
+		if (getActivePlayer() instanceof HumanAgent && gameState.getCurrentPhase() == Phase.ATTACK) {
+			visualizer.getSkipButton().setVisible(true);
+			visualizer.getCancelButton().setVisible(true);
+		} else {
+			visualizer.getCancelButton().setVisible(false);
+			visualizer.getSkipButton().setVisible(false);
+		}
+		if (ticks == getActivePlayerClock()) {
 			ticks = 0;
 			play();
 		}
@@ -76,27 +140,12 @@ public class GameController extends Component {
 	}
 
 	public void play() {
-		System.out.println("Requesting Move");
-		GameState newState = null;
-		switch (gameState.getActivePlayer()) {
-		case PLAYER1:
-			visualizer.getViewerPipe().removeViewerListener(player2);
-			visualizer.getViewerPipe().addViewerListener(player1);
-			newState = player1.play(gameState, Player.PLAYER1);
-			if (newState != null) {
-				gameState = newState;
-			}
-			break;
-		case PLAYER2:
-			visualizer.getViewerPipe().removeViewerListener(player1);
-			visualizer.getViewerPipe().addViewerListener(player2);
-			newState = player2.play(gameState, Player.PLAYER2);
-			if (newState != null) {
-				gameState = newState;
-			}
-			break;
-		default:
-			break;
+		GameState newState;
+		visualizer.getViewerPipe().removeViewerListener(getInactivePlayer());
+		visualizer.getViewerPipe().addViewerListener(getActivePlayer());
+		newState = getActivePlayer().play(gameState, gameState.getActivePlayer());
+		if (newState != null) {
+			gameState = newState;
 		}
 		visualizer.visualize(gameState);
 	}
@@ -110,8 +159,11 @@ public class GameController extends Component {
 						player1.reset();
 						player2.reset();
 						pumpThread.stop();
+						pumpThread = null;
 						init();
 						resume();
+					} else {
+						FXGL.exit();
 					}
 				});
 	}
