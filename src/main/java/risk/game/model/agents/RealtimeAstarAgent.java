@@ -8,7 +8,6 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.function.BiFunction;
 
-import risk.game.model.state.AstarNode;
 import risk.game.model.state.GameState;
 import risk.game.model.state.Phase;
 import risk.game.model.state.Player;
@@ -16,18 +15,16 @@ import risk.game.model.state.RTAnode;
 import risk.game.model.state.action.Action;
 import risk.game.model.state.action.AttackAction;
 
-public class RealtimeAstarAgent extends GameAgent {
+public class RealtimeAstarAgent extends GameAgent implements SearchAgent {
 
 	private BiFunction<GameState, Player, Long> heuristic;
-	private int turn;
 	private int expandedNodes;
-	private final int LIMIT = 10;
+	private final int LIMIT = 3;
 
 	public static final String KEY = "Real-time A*";
 
 	public RealtimeAstarAgent(BiFunction<GameState, Player, Long> heuristic) {
 		this.heuristic = heuristic;
-		turn = 0;
 		expandedNodes = 0;
 	}
 
@@ -54,6 +51,7 @@ public class RealtimeAstarAgent extends GameAgent {
 		while (!frontier.isEmpty()) {
 			node = frontier.poll();
 			state = node.getGameState();
+			expandedNodes++;
 			visited.add(node);
 
 			if (state.isWinner(player) || node.getDepth() == LIMIT) {
@@ -74,19 +72,16 @@ public class RealtimeAstarAgent extends GameAgent {
 				moves = new ArrayList<>(state.getPossibleAllocations());
 			}
 
-			if (state.getCurrentPhase() == Phase.ATTACK && player == Player.PLAYER2)
-				turn++;
-
 			for (Action move : moves) {
 				GameState newState = state.forcastMove(move);
 				long f = Long.MAX_VALUE;
 				if (state.getCurrentPhase() == Phase.ATTACK) {
-					f = turn + heuristic.apply(newState, newState.getActivePlayer());
+					f = newState.getTurns(player) + heuristic.apply(newState, player);
 				} else {
 					Collection<AttackAction> attacks = newState.getPossibleAttacks();
 					for (AttackAction a : attacks) {
 						GameState attackState = newState.forecastAttack(a);
-						long newf = turn + heuristic.apply(attackState, attackState.getActivePlayer());
+						long newf = attackState.getTurns(player) + heuristic.apply(attackState, player);
 						if (f > newf)
 							f = newf;
 					}
@@ -111,18 +106,17 @@ public class RealtimeAstarAgent extends GameAgent {
 			bestMove = bestMove.getParent();
 		}
 
-		expandedNodes++;
 		return bestMove.getGameState();
-	}
-
-	public long calculatePerformance(int f) {
-		return f * turn + expandedNodes;
 	}
 
 	@Override
 	public void reset() {
 		expandedNodes = 0;
-		turn = 0;
+	}
+
+	@Override
+	public int getExpandedNodes() {
+		return expandedNodes;
 	}
 
 }

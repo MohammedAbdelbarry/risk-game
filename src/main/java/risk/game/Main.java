@@ -6,6 +6,7 @@ import com.almasb.fxgl.scene.menu.FXGLDefaultMenu;
 import com.almasb.fxgl.scene.menu.MenuType;
 import com.almasb.fxgl.settings.GameSettings;
 import javafx.scene.control.ChoiceBox;
+import org.graphstream.graph.Node;
 import risk.game.controller.GameController;
 import risk.game.model.agents.GameAgent;
 import risk.game.model.agents.GreedyAgent;
@@ -56,7 +57,22 @@ public class Main extends GameApplication {
 					return Long.MAX_VALUE;
 				}
 
-				return state.getWorldMap().
+				final int[] minTurns = {Integer.MAX_VALUE};
+				state.getWorldMap().nodes().forEach(node -> {
+					Country country = node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
+					if (country.getControllingPlayer() == player) {
+						node.leavingEdges().forEach(edge -> {
+							Country otherCountry = edge.getTargetNode().getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class);
+							if (otherCountry.getControllingPlayer() != player) {
+								minTurns[0] = Math.min(minTurns[0], Math.max(0,
+										(country.getNumberOfTroops() - otherCountry.getNumberOfTroops() + 2)
+												/ state.getPlayerState(player).getTroopsPerTurn()));
+							}
+						});
+					}
+				});
+
+				return minTurns[0] + state.getWorldMap().
 						nodes().map(node -> node.getAttribute(Constants.COUNTRY_ATTRIBUTE, Country.class)).
 						map(Country::getControllingPlayer).filter(p -> p == player.getOpponent()).count();
 

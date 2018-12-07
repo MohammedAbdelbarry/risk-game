@@ -137,9 +137,4 @@ public class AggressiveAgent extends GameAgent {
 		return state.forecastAttack(attackMove);
 	}
 
-	@Override
-	public long calculatePerformance(int f) {
-		return 0;
-	}
-
 }

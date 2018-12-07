@@ -9,6 +9,7 @@ import javafx.event.EventHandler;
 import org.graphstream.ui.view.ViewerPipe;
 import risk.game.controller.agents.HumanAgent;
 import risk.game.model.agents.GameAgent;
+import risk.game.model.agents.SearchAgent;
 import risk.game.model.state.GameState;
 import risk.game.model.state.Phase;
 import risk.game.model.state.Player;
@@ -151,7 +152,9 @@ public class GameController extends Component {
 	}
 
 	private void showGameOver() {
-		calculateAgentsPerformance();
+		System.out.println();
+		calculateAgentsPerformance(player1, Player.PLAYER1);
+		calculateAgentsPerformance(player2, Player.PLAYER2);
 		app.getDisplay().showConfirmationBox(
 				(winner == Player.PLAYER1 ? "Player 1" : "Player 2") + " is the winner.\nPlay Again?", yes -> {
 					if (yes) {
@@ -168,14 +171,21 @@ public class GameController extends Component {
 				});
 	}
 	
-	private void calculateAgentsPerformance() {
-		int[] fValues = { 1, 100, 10000 };
-		for (int f : fValues) {
-			long perf = player2.calculatePerformance(f);
-			if (perf != 0) {
+	private void calculateAgentsPerformance(GameAgent agent, Player player) {
+		if (agent instanceof SearchAgent) {
+			int[] fValues = { 1, 100, 10000 };
+			System.out.println("------------------------------------------------------------------------");
+			System.out.println(player == Player.PLAYER1 ? "Player 1" : "Player 2");
+			System.out.println("------------------------------------------------------------------------");
+			SearchAgent searchAgent = (SearchAgent) agent;
+			for (int f : fValues) {
+				long perf = f * gameState.getTurns(player) + searchAgent.getExpandedNodes();
 				System.out.println("For f = "+ f);
-				System.out.println("Perfomance: " + perf);
+				System.out.println(String.format("\tCost(turns=%d, expandedNodes=%d) = %d", gameState.getTurns(player),
+						searchAgent.getExpandedNodes(), perf));
 			}
+			System.out.println("------------------------------------------------------------------------");
+			System.out.println();
 		}
 	}
 

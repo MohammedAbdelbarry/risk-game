@@ -132,12 +132,6 @@ public class HumanAgent extends GameAgent {
         return state;
     }
 
-
-	@Override
-	public long calculatePerformance(int f) {
-		return 0;
-	}
-
     @Override
     public void buttonReleased(String s) {
         if (firstNode == null) {

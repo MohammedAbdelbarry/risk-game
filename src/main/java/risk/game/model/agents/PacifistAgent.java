@@ -49,8 +49,4 @@ public class PacifistAgent extends GameAgent{
 
 	}
 
-	@Override
-	public long calculatePerformance(int f) {
-		return 0;
-	}
 }

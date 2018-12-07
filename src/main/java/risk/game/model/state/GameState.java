@@ -19,6 +19,8 @@ public class GameState {
 	private Graph worldMap;
 	private PlayerState player1State;
 	private PlayerState player2State;
+	private int player1Turns;
+	private int player2Turns;
 	private Collection<Continent> continents;
 
 	private static final int NUM_TROOPS = 2;
@@ -28,6 +30,8 @@ public class GameState {
 		this.continents = continents;
 		player = Player.PLAYER1;
 		phase = Phase.ALLOCATE;
+		player1Turns = 1;
+		player2Turns = 0;
 
 		player1State = new PlayerState(worldMap, Player.PLAYER1, NUM_TROOPS);
 		player2State = new PlayerState(worldMap, Player.PLAYER2, NUM_TROOPS);
@@ -42,6 +46,8 @@ public class GameState {
 		player1State = other.player1State;
 		player2State = other.player2State;
 		continents = other.continents;
+		player1Turns = other.player1Turns;
+		player2Turns = other.player2Turns;
 	}
 
     public Graph getWorldMap() {
@@ -133,17 +139,21 @@ public class GameState {
 
 	public GameState forecastAttack(AttackAction move) {
 		GameState newState = new GameState(this);
-		newState.player = this.player.getOpponent();
-		newState.phase = Phase.ALLOCATE;
-		if (move == AttackAction.SKIP_ACTION) {
-			return newState;
-		}
-		updateGraphCountry(newState.worldMap, move.getModifiedAttacker());
-		updateGraphCountry(newState.worldMap, move.getModifiedAttackee());
+        newState.player = this.player.getOpponent();
+        newState.phase = Phase.ALLOCATE;
+        if (newState.getActivePlayer() == Player.PLAYER1) {
+            newState.player1Turns = player1Turns + 1;
+        } else {
+            newState.player2Turns = player2Turns + 1;
+        }
+        if (move == AttackAction.SKIP_ACTION) {
+            return newState;
+        }
+        updateGraphCountry(newState.worldMap, move.getModifiedAttacker());
+        updateGraphCountry(newState.worldMap, move.getModifiedAttackee());
 
-		newState.player1State = new PlayerState(newState.worldMap, Player.PLAYER1, player1State.getTroopsPerTurn());
-		newState.player2State = new PlayerState(newState.worldMap, Player.PLAYER2, player2State.getTroopsPerTurn());
-
+        newState.player1State = new PlayerState(newState.worldMap, Player.PLAYER1, player1State.getTroopsPerTurn());
+        newState.player2State = new PlayerState(newState.worldMap, Player.PLAYER2, player2State.getTroopsPerTurn());
 		newState.player1State.setTroopsPerTurn(newState.calculateTroopsPerTurn(Player.PLAYER1)
 				+ getPlayerAttackBonus(Player.PLAYER1, player));
 		newState.player2State.setTroopsPerTurn(newState.calculateTroopsPerTurn(Player.PLAYER2)
@@ -184,6 +194,13 @@ public class GameState {
 		}
 		return country.getControllingPlayer();
 	}
+
+	public int getTurns(Player player) {
+	    if (player == Player.PLAYER1) {
+	        return player1Turns;
+        }
+        return player2Turns;
+    }
 
 	private int calculateTroopsPerTurn(Player player) {
 		PlayerState state = getPlayerState(player);

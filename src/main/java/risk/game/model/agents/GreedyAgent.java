@@ -10,18 +10,15 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
-public class GreedyAgent extends GameAgent {
+public class GreedyAgent extends GameAgent implements SearchAgent {
     private BiFunction<GameState, Player, Long> heuristic;
-    private int turn;
     private int expandedNodes;
 
     public static final String KEY = "Greedy";
 
     public GreedyAgent(BiFunction<GameState, Player, Long> heuristic) {
         this.heuristic = heuristic;
-        turn = 0;
         expandedNodes = 0;
     }
 
@@ -36,10 +33,6 @@ public class GreedyAgent extends GameAgent {
         }
 
         System.out.println(state.getActivePlayer() + ":" + state.getCurrentPhase());
-
-        if (state.getCurrentPhase() == Phase.ATTACK && player == Player.PLAYER2) {
-			turn++;
-		}
         
         if (state.getCurrentPhase() == Phase.ALLOCATE) {
             Collection<Action> moves = new ArrayList<>(state.getPossibleAllocations());
@@ -54,6 +47,7 @@ public class GreedyAgent extends GameAgent {
                             .map(newState -> heuristic.apply(newState, player))
                             .min(Long::compareTo)
                             .orElse(Long.MAX_VALUE)));
+            expandedNodes += moves.size();
             return bestAlloc.orElse(state);
         }
 
@@ -62,22 +56,22 @@ public class GreedyAgent extends GameAgent {
             return state;
         }
 
+        expandedNodes += moves.size();
         Optional<GameState> possibleState = moves
                 .stream()
                 .map(state::forcastMove)
                 .min(Comparator.comparingLong(newState -> heuristic.apply(newState, player)));
 
-        expandedNodes++;
         return possibleState.orElse(state);
     }
 
-    public long calculatePerformance(int f) {
-		return f * turn + expandedNodes;
-	}
-    
     @Override
     public void reset() {
-    	turn = 0;
     	expandedNodes = 0;
+    }
+
+    @Override
+    public int getExpandedNodes() {
+        return expandedNodes;
     }
 }

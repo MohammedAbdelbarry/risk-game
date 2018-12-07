@@ -14,7 +14,6 @@ public abstract class GameAgent implements ViewerListener {
 	}
 
 	public abstract void reset();
-	public abstract long calculatePerformance(int f);
 
 	@Override
 	public void viewClosed(String s) {

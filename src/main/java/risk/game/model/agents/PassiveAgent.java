@@ -57,9 +57,4 @@ public class PassiveAgent extends GameAgent {
 
 	}
 
-	@Override
-	public long calculatePerformance(int f) {
-		return 0;
-	}
-
 }

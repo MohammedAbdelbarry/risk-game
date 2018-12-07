@@ -16,18 +16,16 @@ import risk.game.model.state.Player;
 import risk.game.model.state.action.Action;
 import risk.game.model.state.action.AttackAction;
 
-public class AstarAgent extends GameAgent {
+public class AstarAgent extends GameAgent implements SearchAgent {
 
 	private BiFunction<GameState, Player, Long> heuristic;
 	private Stack<AstarNode> expanded;
-	private int turn;
 	private int expandedNodes;
 
 	public static final String KEY = "A*";
 
 	public AstarAgent(BiFunction<GameState, Player, Long> heuristic) {
 		this.heuristic = heuristic;
-		turn = 0;
 		expandedNodes = 0;
 	}
 
@@ -52,7 +50,6 @@ public class AstarAgent extends GameAgent {
 	@Override
 	public void reset() {
 		expanded = null;
-		turn = 0;
 		expandedNodes = 0;
 	}
 
@@ -89,20 +86,16 @@ public class AstarAgent extends GameAgent {
 				moves = new ArrayList<>(state.getPossibleAllocations());
 			}
 
-			if (state.getCurrentPhase() == Phase.ATTACK && player == Player.PLAYER2) {
-				turn++;
-			}
-
 			for (Action move : moves) {
 				GameState newState = state.forcastMove(move);
 				long f = Long.MAX_VALUE;
 				if (state.getCurrentPhase() == Phase.ATTACK) {
-					f = turn + heuristic.apply(newState, newState.getActivePlayer());
+					f = newState.getTurns(player) + heuristic.apply(newState, player);
 				} else {
 					Collection<AttackAction> attacks = newState.getPossibleAttacks();
 					for (AttackAction a : attacks) {
 						GameState attackState = newState.forecastAttack(a);
-						long newf = turn + heuristic.apply(attackState, attackState.getActivePlayer());
+						long newf = attackState.getTurns(player) + heuristic.apply(attackState, player);
 						if (f > newf)
 							f = newf;
 					}
@@ -122,8 +115,9 @@ public class AstarAgent extends GameAgent {
 		expanded.push(terminalState);
 	}
 
-	public long calculatePerformance(int f) {
-		return f * turn + expandedNodes;
-	}
+    @Override
+    public int getExpandedNodes() {
+        return expandedNodes;
+    }
 
 }
